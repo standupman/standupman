@@ -4,7 +4,7 @@ const routes = require('./routes/web');
 const mongoose = require('mongoose');
 const app = express()
 const PORT = 5000
-app.use(express.urlencoded({ extended: true }))
+app.use(express.json())
 app.use(cookieParser())
 
 //Database connection

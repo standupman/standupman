@@ -16,23 +16,23 @@ const ScrumSchema = new Schema({
         type: Object,
         validate: {
             validator: function (input) {
-                let questions = JSON.parse(input);
+                let questions = input;
                 let keys = Object.keys(questions);
                 if (keys.length < 1) {
                     return false;
                 }
 
-                keys.forEach(key => {
-                  if(Object.keys(questions[key]).length < 2) {
+                for(let i = 0; i < keys.length; i++) {
+                  if(Object.keys(questions[keys[i]]).length < 2) {
                       return false;
                   }
-                  if(questions[key].title === undefined) {
+                  if(questions[keys[i]].title === undefined) {
                       return false;
                   }
-                  if(questions[key].response_type === undefined) {
+                  if(questions[keys[i]].response_type === undefined) {
                       return false;
                   }
-                });
+                }
 
             
                 return true;
