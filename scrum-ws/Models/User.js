@@ -1,15 +1,18 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const bcrypt = require('bcrypt');
 
 const UserSchema = new Schema({
     username: {
         type: String,
         validate: {
             validator: function (username) {
+                return /^([\a-zA-Z\d_\-.]){4,}$/.test(username);
             },
-            message : "Email must be valid"
+            message: props => `Username must be at least four alphanumeric characters. ${props.value} is not valid.`
         },
-        required: [true, 'A unique username must be provided']
+        unique: [true, "Username already exists!"],
+        required: true
     },
     email: {
         type: String,
@@ -17,9 +20,10 @@ const UserSchema = new Schema({
             validator: function (email) {
                 return /^([\a-zA-Z\d_\-.])+@([a-zA-Z\d_\-.])+\.([a-z]+)$/.test(email);
             },
-            message : "Email must be valid"
+            message: props => `${props.value} is not a valid email. Email must be valid`
         },
-        required: [true, 'Email must be present']
+        unique: [true, "Email already exists!"],
+        required: true
     },
     full_name: {
         type: String,
@@ -29,7 +33,8 @@ const UserSchema = new Schema({
     password: {
         type: String,
         minlength: [4, 'Password too short'],
-        required: [true, 'Password not present']
+        required: [true, 'Password not present'],
+        hidden: true
     },
     created_at: {
         type: Date,
@@ -39,6 +44,13 @@ const UserSchema = new Schema({
     }
 
 });
+
+
+UserSchema.methods.validatePassword = function (password) {
+    console.log(this.password)
+    console.log(password);
+    return bcrypt.compareSync(password, this.password);
+};
 
 const User = mongoose.model('User', UserSchema);
 

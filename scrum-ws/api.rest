@@ -1,0 +1,11 @@
+GET http://localhost:5000
+
+###
+
+POST http://localhost:5000/login
+Content-Type: application/json
+
+{
+  "username" : "bandolo_the_blind",
+  "password" : "12345678"
+}

@@ -1,11 +1,11 @@
 const express = require('express')
-const cookieParser = require('cookie-parser')
-const routes = require('./routes/web');
 const mongoose = require('mongoose');
+const passport = require('passport');
+const routes = require('./routes/web');
 const app = express()
 const PORT = 5000
 app.use(express.json())
-app.use(cookieParser())
+app.use(passport.initialize());
 
 //Database connection
 const mongoDB = 'mongodb://127.0.0.1/scrum_app';

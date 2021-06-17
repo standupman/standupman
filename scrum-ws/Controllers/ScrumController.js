@@ -1,4 +1,6 @@
 const Scrum = require('../Models/Scrum');
+const { validationResult } = require('express-validator');
+
 module.exports = {
     createNewScrum: (req, res) => {
         Scrum.create(req.body.scrum).then((scrum) => {
@@ -18,5 +20,13 @@ module.exports = {
     },
     completeScrum: (req, res) => {
         res.json({ 'scrum': [] });
+    },
+    subscribeToScrum: (req, res) => {
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+          return res.status(400).json({ errors: errors.array() });
+        }
+    
     }
 }
