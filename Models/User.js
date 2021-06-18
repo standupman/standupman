@@ -41,6 +41,9 @@ const UserSchema = new Schema({
     },
     updated_at: {
         type: Date
+    },
+    standups: {
+        type: Array
     }
 
 });

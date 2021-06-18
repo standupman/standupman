@@ -9,16 +9,27 @@ const { body } = require('express-validator');
 
 
 router.get('/', publicController.welcome);
-router.post('/new/StandUp', authMiddleware, StandUpController.createNewStandUp);
-router.get('/StandUps', authMiddleware, StandUpController.StandUpList);
-router.post('/StandUps/subcribe', body('StandUp_id').isString(), authMiddleware, StandUpController.subscribeToStandUp);
-router.post('/StandUp/update/:id', authMiddleware, StandUpController.updateStandUp);
-router.post('/complete/StandUp/:id', authMiddleware, StandUpController.completeStandUp);
-router.get('/users',  authMiddleware, userController.users);
+router.post('/new/standup', authMiddleware, StandUpController.createNewStandUp);
+router.get('/standups', authMiddleware, StandUpController.StandUpList);
+router.post('/standups/subcribe', [
+    body('standup_id').isString(),
+    authMiddleware
+], StandUpController.subscribeToStandUp);
+router.post('/standups/unsubcribe', [
+    body('standup_id').isString(),
+    authMiddleware
+], StandUpController.unsubscribeToStandUp);
+router.post('/standup/update', authMiddleware, StandUpController.updateStandUp);
+router.post('/standups/complete', [
+    body('standup_id').isString(),
+    body('answers').isString(),
+    authMiddleware
+], StandUpController.completeStandUp);
+router.get('/users', authMiddleware, userController.users);
 
 //Authentication routes
 
 router.post('/login', authMiddleware, authenticationController.login);
-router.post('/user/register',  authenticationController.createUser);
+router.post('/user/register', authenticationController.createUser);
 
 module.exports = router;
