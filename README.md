@@ -1,13 +1,19 @@
-# ScrumApp
+# StandUpMan
 
-Scrum Update Management App
+**StandUpMan** is an agile tool used to manage scheduled standup-notes.
+
+
+## Installation 
+
+- `git clone https://github.com/Fenn-CS/standupman`
+- `cd standupman`
+- `npm install`
+- `npm run dev` 
 
 ## Archictecture 
 
 ### Webservice
 
-The webservice or backend code is hosted in [scrum-ws/](scrum-ws/)
-
 ### UI
 
-The UI code is hosted in [scrum-ui/](scrum-ui/)
+The UI code is hosted in [scrum-ui/](#)
