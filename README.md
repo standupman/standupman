@@ -7,6 +7,7 @@
 
 - `git clone https://github.com/Fenn-CS/standupman`
 - `cd standupman`
+- `cp .env.example .env`
 - `npm install`
 - `npm run dev` 
 
@@ -16,4 +17,4 @@
 
 ### UI
 
-The UI code is hosted in [scrum-ui/](#)
+The UI code is hosted in [StandUp-ui/](#)
