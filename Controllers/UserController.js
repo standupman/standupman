@@ -9,7 +9,7 @@ module.exports = {
         })
       },
 
-    subscribeToScrum: (req, res) => {
+    subscribeToStandUp: (req, res) => {
 
         const errors = validationResult(req);
         if (!errors.isEmpty()) {

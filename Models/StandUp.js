@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const ScrumSchema = new Schema({
+const StandUpSchema = new Schema({
     name: {
         type: String,
-        minlength: [4, 'Scrum name too short'],
-        required: [true, 'Scrum name not present']
+        minlength: [4, 'StandUp name too short'],
+        required: [true, 'StandUp name not present']
     },
     description: String,
     completionTime: {
@@ -45,5 +45,5 @@ const ScrumSchema = new Schema({
     user_id: String
 });
 
-const Scrum = mongoose.model('Scrum', ScrumSchema);
-module.exports = Scrum;
+const StandUp = mongoose.model('StandUp', StandUpSchema);
+module.exports = StandUp;
