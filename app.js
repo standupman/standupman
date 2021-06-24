@@ -4,7 +4,6 @@ const passport = require('passport');
 const routes = require('./routes/web');
 require('dotenv').config();
 const app = express()
-const PORT = 5000
 app.use(express.json())
 app.use(passport.initialize());
 
@@ -16,6 +15,6 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 
 app.use('/', routes);
-app.listen(PORT, () => {
-    console.log(`Application running at http://localhost:${PORT}`)
+app.listen(process.env.DB_HOST, () => {
+    console.log(`Application running at http://localhost:${process.env.DB_HOST}`)
 })
