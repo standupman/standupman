@@ -1,8 +1,9 @@
 const express = require('express')
 const mongoose = require('mongoose');
 const passport = require('passport');
+const path = require('path')
 const routes = require('./routes/web');
-require('dotenv').config();
+require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 const app = express()
 app.use(express.json())
 app.use(passport.initialize());
@@ -15,6 +16,6 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 
 app.use('/', routes);
-app.listen(process.env.DB_HOST, () => {
-    console.log(`Application running at http://localhost:${process.env.DB_HOST}`)
+app.listen(process.env.APP_PORT, () => {
+    console.log(`Application running at http://localhost:${process.env.APP_PORT}`)
 })
