@@ -19,7 +19,10 @@ router.post('/standups/unsubcribe', [
     body('standup_id').isString(),
     authMiddleware
 ], StandUpController.unsubscribeToStandUp);
-router.post('/standup/update', authMiddleware, StandUpController.updateStandUp);
+router.post('/standup/update', [
+    body('standup').isObject(),
+    authMiddleware
+], StandUpController.updateStandUp);
 router.post('/standups/complete', [
     body('standup_id').isString(),
     body('answers').isString(),

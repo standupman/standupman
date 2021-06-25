@@ -16,14 +16,39 @@ module.exports = {
         res.json({ 'standups': standUps });
 
     },
-    updateStandUp: (req, res) => {
-        res.json({ StandUp: [] })
-    },
-    completeStandUp: (req, res) => {
+    updateStandUp: async (req, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
+
+        try {
+            var standUp = await StandUp.findOne({ _id: req.body.standup.id });
+        } catch (e) {
+            return res.status(404).json({ message: "StandUp not found!", errors: e.message });
+        }
+
+        try {
+            standUp = await StandUp.findOneAndUpdate({ _id: standUp.id }, req.body.standup, {new: true, runValidators: true});
+            // StandUp.findOneAndUpdate()
+        } catch (e) {
+            return res.status(404).json({ message: "Error updating standup!", errors: e.message });
+        }
+
+        res.json({ 'StandUp': standUp });
+    },
+    completeStandUp: async (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        try {
+            var standUp = await StandUp.findOne({ _id: req.body.standup_id });
+        } catch (e) {
+            return res.status(404).json({ message: "StandUp not found!", errors: e.message });
+        }
+
         res.json({ 'StandUp': [] });
     },
     subscribeToStandUp: async (req, res) => {
