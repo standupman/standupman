@@ -1,4 +1,5 @@
 const StandUp = require('../Models/StandUp');
+const StandUpUpdate = require('../Models/StandUpUpdate');
 const User = require('../Models/User');
 const { validationResult } = require('express-validator');
 
@@ -11,9 +12,23 @@ module.exports = {
         });
 
     },
-    StandUpList: async (req, res) => {
+    deleteStandUp: (req, res) => {
+
+    },
+    standUpList: async (req, res) => {
         let standUps = await StandUp.find();
         res.json({ 'standups': standUps });
+
+    },
+    standUpResponses: async (req, res) => {
+        let responses = null;
+        if(req.query.standup_id) {
+            responses = await StandUpUpdate.find({"standup_id": req.query.standup_id });
+            res.json({ standUpResponses: responses });
+        }
+
+        responses = await StandUpUpdate.find();
+        res.json({ standUpResponses: responses });
 
     },
     updateStandUp: async (req, res) => {
@@ -43,13 +58,13 @@ module.exports = {
             return res.status(400).json({ errors: errors.array() });
         }
 
-        try {
-            var standUp = await StandUp.findOne({ _id: req.body.standup_id });
-        } catch (e) {
-            return res.status(404).json({ message: "StandUp not found!", errors: e.message });
-        }
-
-        res.json({ 'StandUp': [] });
+        StandUpUpdate.create(req.body.standup_update).then((standUpUpdate) => {
+            res.json({ 'standUpUpdate': standUpUpdate });
+        }).catch((error) => {
+            res.json({ StandUp: { message: "There was an error creating new StandUp", errorDetails: error } });
+        });
+        
+       
     },
     subscribeToStandUp: async (req, res) => {
         const errors = validationResult(req);

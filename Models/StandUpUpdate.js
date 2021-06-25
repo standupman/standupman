@@ -30,10 +30,10 @@ const StandUpUpdateSchema = new Schema({
                   if(Object.keys(answers[keys[i]]).length < 2) {
                       return false;
                   }
-                  if(answers[keys[i]].title === undefined) {
+                  if(answers[keys[i]].question_id === undefined || answers[keys[i]].question_id === "") {
                       return false;
                   }
-                  if(answers[keys[i]].response === undefined) {
+                  if(answers[keys[i]].response === undefined || answers[keys[i]].response ===  "") {
                       return false;
                   }
                 }
@@ -41,7 +41,7 @@ const StandUpUpdateSchema = new Schema({
                 return true;
             
             },
-            message: 'A minimum of one question must be present with the form { question_1: {title: "What did you do today", response_type: "String"}, question_2: {title: "How many hours did you work today", response_type: "Number"}}',
+            message: 'A minimum of one answer must be present with the form { answer_1: {question_id: question_1, response: "My answer 1"}, answer_2: {question_id: question_2, response: "My answer 2"}}',
         },
         required: [true, 'answers object not present']
     },

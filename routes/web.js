@@ -9,8 +9,10 @@ const { body } = require('express-validator');
 
 
 router.get('/', publicController.welcome);
-router.post('/new/standup', authMiddleware, StandUpController.createNewStandUp);
-router.get('/standups', authMiddleware, StandUpController.StandUpList);
+router.post('/standups/new', authMiddleware, StandUpController.createNewStandUp);
+router.post('/standups/delete', authMiddleware, StandUpController.deleteStandUp);
+router.get('/standups', authMiddleware, StandUpController.standUpList);
+router.get('/standups/responses', authMiddleware, StandUpController.standUpResponses);
 router.post('/standups/subcribe', [
     body('standup_id').isString(),
     authMiddleware
@@ -19,13 +21,12 @@ router.post('/standups/unsubcribe', [
     body('standup_id').isString(),
     authMiddleware
 ], StandUpController.unsubscribeToStandUp);
-router.post('/standup/update', [
+router.post('/standups/update', [
     body('standup').isObject(),
     authMiddleware
 ], StandUpController.updateStandUp);
 router.post('/standups/complete', [
-    body('standup_id').isString(),
-    body('answers').isString(),
+    body('standup_update').isObject(),
     authMiddleware
 ], StandUpController.completeStandUp);
 router.get('/users', authMiddleware, userController.users);
