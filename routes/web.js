@@ -37,6 +37,11 @@ router.get('/users', authMiddleware, userController.users);
 //Authentication routes
 
 router.post('/login', authMiddleware, authenticationController.login);
-router.post('/user/register', authenticationController.createUser);
+router.post('/users/register', [
+    body('user').isObject(),
+    body('user.username').isString(),
+    body('user.email').isEmail(),
+    body('user.password').isString(),
+], authenticationController.createUser);
 
 export default router;
