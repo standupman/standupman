@@ -1,9 +1,10 @@
-const express = require('express')
-const mongoose = require('mongoose');
-const passport = require('passport');
-const path = require('path')
-const routes = require('./routes/web');
-require('dotenv').config({ path: path.resolve(__dirname, '.env') });
+import express from 'express'
+import mongoose from 'mongoose'
+import passport from 'passport'
+import path from 'path'
+import routes from './routes/web.js'
+import dotenv from 'dotenv'
+dotenv.config({ path: path.resolve('.', '.env') });
 const app = express()
 app.use(express.json())
 app.use(passport.initialize());

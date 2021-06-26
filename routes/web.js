@@ -1,34 +1,37 @@
-const express = require('express');
-const router = express.Router();
-const publicController = require('../Controllers/PublicController');
-const StandUpController = require('../Controllers/StandUpController');
-const userController = require('../Controllers/UserController');
-const authenticationController = require('../Controllers/AuthenticationController');
-const authMiddleware = require('../Middlewares/AuthMiddleware').authenticate('basic', { session: false });
-const { body } = require('express-validator');
+
+import { Router } from 'express'
+import publicController from '../Controllers/PublicController.js'
+import standUpController from '../Controllers/StandUpController.js'
+import userController from '../Controllers/UserController.js'
+import authenticationController from '../Controllers/AuthenticationController.js'
+import auth from '../Middlewares/AuthMiddleware.js'
+import { body } from 'express-validator'
+
+const router = Router()
+const authMiddleware = auth.authenticate('basic', { session: false });
 
 
 router.get('/', publicController.welcome);
-router.post('/standups/new', authMiddleware, StandUpController.createNewStandUp);
-router.post('/standups/delete', authMiddleware, StandUpController.deleteStandUp);
-router.get('/standups', authMiddleware, StandUpController.standUpList);
-router.get('/standups/responses', authMiddleware, StandUpController.standUpResponses);
+router.post('/standups/new', authMiddleware, standUpController.createNewStandUp);
+router.post('/standups/delete', authMiddleware, standUpController.deleteStandUp);
+router.get('/standups', authMiddleware, standUpController.standUpList);
+router.get('/standups/responses', authMiddleware, standUpController.standUpResponses);
 router.post('/standups/subcribe', [
     body('standup_id').isString(),
     authMiddleware
-], StandUpController.subscribeToStandUp);
+], standUpController.subscribeToStandUp);
 router.post('/standups/unsubcribe', [
     body('standup_id').isString(),
     authMiddleware
-], StandUpController.unsubscribeToStandUp);
+], standUpController.unsubscribeToStandUp);
 router.post('/standups/update', [
     body('standup').isObject(),
     authMiddleware
-], StandUpController.updateStandUp);
+], standUpController.updateStandUp);
 router.post('/standups/complete', [
     body('standup_update').isObject(),
     authMiddleware
-], StandUpController.completeStandUp);
+], standUpController.completeStandUp);
 router.get('/users', authMiddleware, userController.users);
 
 //Authentication routes
@@ -36,4 +39,4 @@ router.get('/users', authMiddleware, userController.users);
 router.post('/login', authMiddleware, authenticationController.login);
 router.post('/user/register', authenticationController.createUser);
 
-module.exports = router;
+export default router;

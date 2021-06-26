@@ -1,26 +1,30 @@
-const StandUp = require('../Models/StandUp');
-const StandUpUpdate = require('../Models/StandUpUpdate');
-const User = require('../Models/User');
-const { validationResult } = require('express-validator');
+import StandUp from '../Models/StandUp.js'
+import StandUpUpdate from '../Models/StandUpUpdate.js'
+import User from '../Models/User.js'
+import { validationResult } from 'express-validator';
 
-module.exports = {
-    createNewStandUp: (req, res) => {
+class StandUpController {
+    
+    createNewStandUp (req, res) {
         StandUp.create(req.body.StandUp).then((StandUp) => {
             res.json({ StandUp });
         }).catch((error) => {
             res.json({ StandUp: { message: "There was an error creating new StandUp", errorDetails: error } });
         });
 
-    },
-    deleteStandUp: (req, res) => {
+    }
 
-    },
-    standUpList: async (req, res) => {
+    deleteStandUp (req, res) {
+
+    }
+
+    async standUpList (req, res) {
         let standUps = await StandUp.find();
         res.json({ 'standups': standUps });
 
-    },
-    standUpResponses: async (req, res) => {
+    }
+
+    async standUpResponses (req, res) {
         let responses = null;
         if(req.query.standup_id) {
             responses = await StandUpUpdate.find({"standup_id": req.query.standup_id });
@@ -30,8 +34,9 @@ module.exports = {
         responses = await StandUpUpdate.find();
         res.json({ standUpResponses: responses });
 
-    },
-    updateStandUp: async (req, res) => {
+    }
+
+    async updateStandUp (req, res) {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
@@ -51,8 +56,9 @@ module.exports = {
         }
 
         res.json({ 'StandUp': standUp });
-    },
-    completeStandUp: async (req, res) => {
+    }
+
+    async completeStandUp (req, res) {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
@@ -65,8 +71,9 @@ module.exports = {
         });
         
        
-    },
-    subscribeToStandUp: async (req, res) => {
+    }
+
+    async subscribeToStandUp (req, res) {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
@@ -99,8 +106,9 @@ module.exports = {
 
         return res.json({ 'success': true, user: user });
 
-    },
-    unsubscribeToStandUp : async(req, res) => {
+    }
+
+    async unsubscribeToStandUp (req, res) {
 
         try {
             var standUp = await StandUp.findOne({ _id: req.body.standup_id });
@@ -133,3 +141,5 @@ module.exports = {
 
     }
 }
+
+export default new StandUpController();

@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+import mongoose from 'mongoose'
+const Schema = mongoose.Schema
 
 const StandUpSchema = new Schema({
     name: {
@@ -46,4 +46,4 @@ const StandUpSchema = new Schema({
 });
 
 const StandUp = mongoose.model('StandUp', StandUpSchema);
-module.exports = StandUp;
+export default StandUp;

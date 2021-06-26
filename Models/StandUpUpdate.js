@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+import mongoose from 'mongoose'
+const Schema = mongoose.Schema
 
 const StandUpUpdateSchema = new Schema({
     standup_id: {
@@ -49,4 +49,4 @@ const StandUpUpdateSchema = new Schema({
 });
 
 const StandUpUpdate = mongoose.model('StandUpUpdate', StandUpUpdateSchema);
-module.exports = StandUpUpdate;
+export default StandUpUpdate;

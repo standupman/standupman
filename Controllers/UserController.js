@@ -1,7 +1,7 @@
-const User = require('../Models/User');
-const { validationResult } = require('express-validator');
+import User from '../Models/User.js'
+import { validationResult } from 'express-validator';
 
-module.exports = {
+export default {
   
     users: (req, res) => {
         User.find().then(users => {
