@@ -6,10 +6,14 @@ import { validationResult } from 'express-validator';
 class StandUpController {
     
     createNewStandUp (req, res) {
-        StandUp.create(req.body.StandUp).then((StandUp) => {
-            res.json({ StandUp });
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+        StandUp.create(req.body.standup).then(standup => {
+            res.json({ standup });
         }).catch((error) => {
-            res.json({ StandUp: { message: "There was an error creating new StandUp", errorDetails: error } });
+            res.json({ standup: { message: "There was an error creating new StandUp", errorDetails: error } });
         });
 
     }

@@ -12,7 +12,10 @@ const authMiddleware = auth.authenticate('basic', { session: false });
 
 
 router.get('/', publicController.welcome);
-router.post('/standups/new', authMiddleware, standUpController.createNewStandUp);
+router.post('/standups/new', [
+    body('standup').isObject(),
+    authMiddleware
+], standUpController.createNewStandUp);
 router.post('/standups/delete', authMiddleware, standUpController.deleteStandUp);
 router.get('/standups', authMiddleware, standUpController.standUpList);
 router.get('/standups/responses', authMiddleware, standUpController.standUpResponses);
