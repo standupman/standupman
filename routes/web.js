@@ -14,10 +14,10 @@ const authMiddleware = auth.authenticate('basic', { session: false });
 router.get('/', publicController.welcome);
 router.post('/standups/new', [
     body('standup').isObject(),
-    authMiddleware
+    //authMiddleware
 ], standUpController.createNewStandUp);
-router.post('/standups/delete', authMiddleware, standUpController.deleteStandUp);
-router.get('/standups', authMiddleware, standUpController.standUpList);
+router.delete('/standups/delete/:id', authMiddleware, standUpController.deleteStandUp);
+router.get('/standups', standUpController.standUpList);
 router.get('/standups/responses', authMiddleware, standUpController.standUpResponses);
 router.post('/standups/subcribe', [
     body('standup_id').isString(),
@@ -35,7 +35,7 @@ router.post('/standups/complete', [
     body('standup_update').isObject(),
     authMiddleware
 ], standUpController.completeStandUp);
-router.get('/users', authMiddleware, userController.users);
+router.get('/users', userController.users);
 
 //Authentication routes
 

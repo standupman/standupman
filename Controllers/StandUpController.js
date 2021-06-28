@@ -18,7 +18,13 @@ class StandUpController {
 
     }
 
-    deleteStandUp (req, res) {
+    async deleteStandUp (req, res) {
+        let id = req.params.id;
+        StandUp.findByIdAndDelete(id).then((deleteStandUp) => {
+            res.json ({deleteStandUp : "standup deleted successfully"})
+        }).catch ((error) => {
+            res.status(404).json ({message : "ERROR deleting a standuop!"})
+        });
 
     }
 
