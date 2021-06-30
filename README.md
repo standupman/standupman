@@ -40,3 +40,5 @@ Made with [contributors-img](https://contrib.rocks).
 
 Released under MIT License see [LICENSE](LICENSE.md)
 
+project multivated by students
+
