@@ -4,10 +4,8 @@ import User from '../Models/User.js'
 import { validationResult } from 'express-validator';
 
 
-// Standup controller Class
 class StandUpController {
 
-    // create a new standup
     createNewStandUp (req, res) {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -21,22 +19,26 @@ class StandUpController {
 
     }
     
-    // delete a stabdup 
-    async deleteStandUp (req, res) {
-      const id = req.params.id;
-      StandUp.findByIdAndDelete(id)
-        .then(() => {res.json('Standup  Successfully Deleted')})
-        .catch(() => {res.status(404).json('No such standup exist')});
-    }
+    async deleteStandUp(req, res) {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+        try {
+            var del = await StandUps.findOneAndDelete({ _id: req.body.standup.id });
+        } catch (e) {
+            return res.status(404).json({ message: "StandUp id not found!", errors: e.message });
+        }
+        res.json({message: "Successfully deleted"});
+        }
 
-    // standup list
+    
     async standUpList (req, res) {
         let standUps = await StandUp.find();
         res.json({ 'standups': standUps });
 
     }
 
-        // standup responses
     async standUpResponses (req, res) {
         let responses = null;
         if(req.query.standup_id) {
@@ -48,7 +50,6 @@ class StandUpController {
 
     }
 
-        // update standup
     async updateStandUp (req, res) {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -69,7 +70,6 @@ class StandUpController {
         res.json({ 'StandUp': standUp });
     }
 
-        // Complete a standup
     async completeStandUp (req, res) {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -84,7 +84,6 @@ class StandUpController {
         
        
     }
-    // subscribe to a standup
     async subscribeToStandUp (req, res) {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -120,7 +119,7 @@ class StandUpController {
 
     }
 
-    // unsunscribe from a standup
+    // unsunscribe from a 
     async unsubscribeToStandUp (req, res) {
 
         try {
@@ -154,5 +153,4 @@ class StandUpController {
 
     }
 }
-
 export default new StandUpController();
