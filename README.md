@@ -23,11 +23,17 @@
 
 # Archictecture 
 
+To run *StandUpMan* the sysadmin must install and configure the webservice and ui. Linking them with their configured hostnames.
+
 ## Webservice
+
+*StandUpMan* is built on express and employers the the API First design. The webservice (hosted in the repository) exposes an API which provides services for the UI deleted below.
 
 ## UI
 
-StanUpMan's UI source is hosted at [standupman-ui](#)
+StanUpMan's UI is built with [svelte](svelte.dev/) and source is hosted at [standupman-ui](https://github.com/standupman/standupman-ui)
+
+## Setting UP
 
 # Contributors
 <a href="https://github.com/standupman/standupman/graphs/contributors">
