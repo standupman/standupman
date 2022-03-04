@@ -21,6 +21,12 @@
 - `npm install`
 - `npm run dev` 
 
+# Docs
+
+## OpenAPI
+To generate the api spec file run `npm run openapi`
+Standupman also comes with swagger interface configured which can be accessed at `/swagger` endpoint through your browser.
+
 # Archictecture 
 
 To run *StandUpMan* the sysadmin must install and configure the webservice and ui. Linking them with their configured hostnames.
