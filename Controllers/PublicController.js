@@ -1,6 +1,6 @@
 export default {
     welcome : (req, res) => {
-    res.json({ 'welcome': 'Welcome to the StandUpp app' });
+    res.json({ 'welcome': 'Welcome to the StandupMan API!!' });
     }
 };
 

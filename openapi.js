@@ -5,6 +5,6 @@ import swaggerJSDocOptions from './swaggerJSDocOptions.js';
 
 const openapiSpecification = swaggerJSDoc(swaggerJSDocOptions);
 
-fs.writeFileSync("./api-doc.json", JSON.stringify(openapiSpecification));
+fs.writeFileSync("./openapi.json", JSON.stringify(openapiSpecification));
 
-console.log("\nOpenapi spec generated in api-doc.json");
+console.log("\nOpenAPI spec generated in openapi.json");

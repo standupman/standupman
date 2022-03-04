@@ -1,9 +1,19 @@
 const swaggerJSDocOptions = {
     definition: {
-      openapi: '3.0.0',
+      openapi: "3.0.0",
       info: {
-        title: 'Standupman API',
-        version: '1.0.0',
+        title: "StandupmMan API",
+        description: "OpenAPI Annotations for StandupMan API",
+        contact: {
+          name: "StandupMan Support",
+          url: "http://standupman.xyz",
+          email: "support@standupman.xyz"
+        },
+        license: {
+          name: "MIT License",
+          url: "https://github.com/standupman/standupman/blob/master/LICENSE.md"
+        },
+        version: "1.0.0",
       },
       definitions: {
         Standup: {
