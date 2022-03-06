@@ -43,7 +43,7 @@ StanUpMan's UI is built with [svelte](svelte.dev/) and source is hosted at [stan
 
 # Support
 
-Join our community chat rooms on [element](https://matrix.to/#/#standupman:matrix.org) that cover different topics including #bugs, #contributors, #general and more
+Join our community chat rooms on [element](https://matrix.to/#/#standupman:matrix.org) that cover different topics including #bugs, #contributors, #general and more.
 
 # Contributing
 
