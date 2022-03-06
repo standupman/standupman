@@ -41,7 +41,15 @@ StanUpMan's UI is built with [svelte](svelte.dev/) and source is hosted at [stan
 
 ## Setting UP
 
-# Contributors
+# Support
+
+Join our community chat rooms on [element](https://matrix.to/#/#standupman:matrix.org) that cover different topics including #bugs, #contributors, #general and more.
+
+# Contributing
+
+Feel free to [open issues](https://github.com/standupman/standupman/issues), submit patches to fix bugs and or improve documentation. Please discuss new features with the maintainers in the contributors room.
+
+## Contributors
 <a href="https://github.com/standupman/standupman/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=standupman/standupman" />
 </a>
