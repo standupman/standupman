@@ -2,10 +2,12 @@ import express from 'express'
 import mongoose from 'mongoose'
 import passport from 'passport'
 import path from 'path'
+import { expressReceiver } from './mode/slack/app.js'
 import routes from './routes/web.js'
 import dotenv from 'dotenv'
 dotenv.config({ path: path.resolve('.', '.env') });
 const app = express()
+app.use(expressReceiver.router)
 app.use(express.json())
 app.use(passport.initialize());
 
