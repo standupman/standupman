@@ -34,13 +34,20 @@ const StandUpSchema = new Schema({
                   }
                 }
 
-            
                 return true;
             
             },
             message: 'A minimum of one question must be present with the form { question_1: {title: "What did you do today", response_type: "String"}, question_2: {title: "How many hours did you work today", response_type: "Number"}}',
         },
         required: [true, 'Questions object not present']
+    },
+    reminders: {
+        type: Array,
+        default: []
+    },
+    staticTime: {
+        type: Boolean,
+        default: false
     },
     user_id: String
 });

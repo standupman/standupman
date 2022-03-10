@@ -3,6 +3,7 @@ import mongoose from 'mongoose'
 import passport from 'passport'
 import path from 'path'
 import { expressReceiver } from './mode/slack/app.js'
+import { remindersJob } from './Jobs/Reminder.js'
 import routes from './routes/web.js'
 import dotenv from 'dotenv'
 dotenv.config({ path: path.resolve('.', '.env') });
@@ -22,3 +23,4 @@ app.use('/', routes);
 app.listen(process.env.APP_PORT, () => {
     console.log(`Application running at http://localhost:${process.env.APP_PORT}`)
 })
+remindersJob

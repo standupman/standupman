@@ -104,7 +104,7 @@ boltApp.action("standup_list", async ({ ack, body, client, logger }) => {
       
     if (
       standup_qns == null ||
-      standup_qns.responseTime.getDate() != new Date().getDate()
+      standup_qns.responseTime.getDate() != DateTime.now().toUTC().get('day')
     ) {
       for (let question in standup["questions"]) {
         block_update["blocks"].push({

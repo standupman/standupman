@@ -45,6 +45,10 @@ const UserSchema = new Schema({
     },
     standups: {
         type: Array
+    },
+    timeZone: {
+        type: String,
+        required: [true, 'TimeZone is not present']
     }
 
 });
