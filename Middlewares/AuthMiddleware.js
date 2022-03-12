@@ -1,10 +1,17 @@
 import User from '../Models/User.js';
+
 import passport from 'passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
-var opts = {}
-opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-opts.secretOrKey = 'secret';
+import dotenv from 'dotenv';
+import path from 'path';
+
+dotenv.config({ path: path.resolve('.', '.env') });
+
+const opts = {
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: process.env.JWT_SECRET_KEY
+}
 
 export default passport.use(new Strategy(opts, function(jwt_payload, done) {
   User.findOne({id: jwt_payload.sub}, function(err, user) {
