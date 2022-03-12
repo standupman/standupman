@@ -17,7 +17,6 @@ export default passport.use(new Strategy(opts, function(jwt_payload, done) {
   User.findOne({id: jwt_payload.sub}, function(err, user) {
     if (err) { return done(err); }
     if (!user) { return done(null, false); }
-    if (!user.validatePassword(password)) { return done(null, false); }
     return done(null, user);
   });
 }));
