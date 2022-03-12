@@ -3,8 +3,8 @@ import User from '../Models/User.js';
 import passport from 'passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
-import dotenv from 'dotenv'
-import path from 'path'
+import dotenv from 'dotenv';
+import path from 'path';
 
 dotenv.config({ path: path.resolve('.', '.env') });
 
