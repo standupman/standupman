@@ -8,7 +8,7 @@ import auth from '../Middlewares/AuthMiddleware.js'
 import { body } from 'express-validator'
 
 const router = Router()
-const authMiddleware = auth.authenticate('basic', { session: false });
+const authMiddleware = auth.authenticate('jwt', { session: false });
 
 /**
  * @openapi
