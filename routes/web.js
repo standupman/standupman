@@ -208,7 +208,7 @@ router.get('/users', authMiddleware, userController.users);
  *           user:
  *             $ref: '#/definitions/Login'
  */
-router.post('/login', authMiddleware, authenticationController.login);
+router.post('/login', authenticationController.login);
 
 /**
  * @openapi
