@@ -3,6 +3,8 @@ import bcrypt from 'bcrypt';
 import { validationResult } from 'express-validator';
 import dotenv from 'dotenv';
 import path from 'path';
+import jwt from 'jsonwebtoken';
+import passport from 'passport';
 
 
 function genToken( user ) {
@@ -15,12 +17,19 @@ function genToken( user ) {
   }
 
 export default {
-    login: (req, res) => {
-       // res.json({username: req.body.username, password: req.body.password});
-       let user = Object.assign({}, req.user)._doc;
-       delete user.password;
-       const token = genToken(user);
-       res.status(200).json({token});
+    login: (req, res, next) => {
+        User.findOne({ username: req.body.username}, (err, user) => {
+            if (!user.validatePassword(req.body.password )) { res.status(403).json({ error: 'Incorrect password'}); }
+            if (err) {
+                console.log("Error Happened In auth /token Route");
+            } else {
+                const payload = {
+                    sub: user.id,
+                };
+                const token = genToken(payload);
+                res.status(200).json({token});
+            }
+          });
     },
     logout: (req, res) => {
         req.logout();
