@@ -1,13 +1,12 @@
+import { Router } from 'express';
+import { body } from 'express-validator';
+import publicController from '../Controllers/PublicController';
+import standUpController from '../Controllers/StandUpController';
+import userController from '../Controllers/UserController';
+import authenticationController from '../Controllers/AuthenticationController';
+import auth from '../Middlewares/AuthMiddleware';
 
-import { Router } from 'express'
-import publicController from '../Controllers/PublicController.js'
-import standUpController from '../Controllers/StandUpController.js'
-import userController from '../Controllers/UserController.js'
-import authenticationController from '../Controllers/AuthenticationController.js'
-import auth from '../Middlewares/AuthMiddleware.js'
-import { body } from 'express-validator'
-
-const router = Router()
+const router = Router();
 const authMiddleware = auth.authenticate('jwt', { session: false });
 
 /**
@@ -71,8 +70,8 @@ router.get('/standups/responses', authMiddleware, standUpController.standUpRespo
  *             $ref: '#/definitions/Standup'
  */
 router.post('/standups/new', [
-    body('standup').isObject(),
-    authMiddleware
+  body('standup').isObject(),
+  authMiddleware,
 ], standUpController.createNewStandUp);
 
 /**
@@ -104,8 +103,8 @@ router.post('/standups/delete', authMiddleware, standUpController.deleteStandUp)
  *              type: string
  */
 router.post('/standups/subcribe', [
-    body('standup_id').isString(),
-    authMiddleware
+  body('standup_id').isString(),
+  authMiddleware,
 ], standUpController.subscribeToStandUp);
 
 /**
@@ -128,8 +127,8 @@ router.post('/standups/subcribe', [
  *              type: string
  */
 router.post('/standups/unsubcribe', [
-    body('standup_id').isString(),
-    authMiddleware
+  body('standup_id').isString(),
+  authMiddleware,
 ], standUpController.unsubscribeToStandUp);
 
 /**
@@ -150,8 +149,8 @@ router.post('/standups/unsubcribe', [
  *             $ref: '#/definitions/Standup'
  */
 router.post('/standups/update', [
-    body('standup').isObject(),
-    authMiddleware
+  body('standup').isObject(),
+  authMiddleware,
 ], standUpController.updateStandUp);
 
 /**
@@ -171,8 +170,8 @@ router.post('/standups/update', [
  *             $ref: '#/definitions/StandupUpdate'
  */
 router.post('/standups/complete', [
-    body('standup_update').isObject(),
-    authMiddleware
+  body('standup_update').isObject(),
+  authMiddleware,
 ], standUpController.completeStandUp);
 
 /**
@@ -191,7 +190,7 @@ router.post('/standups/complete', [
  */
 router.get('/users', authMiddleware, userController.users);
 
-//Authentication routes
+// Authentication routes
 
 /**
  * @openapi
@@ -226,10 +225,10 @@ router.post('/login', authenticationController.login);
  *             $ref: '#/definitions/User'
  */
 router.post('/users/register', [
-    body('user').isObject(),
-    body('user.username').isString(),
-    body('user.email').isEmail(),
-    body('user.password').isString(),
+  body('user').isObject(),
+  body('user.username').isString(),
+  body('user.email').isEmail(),
+  body('user.password').isString(),
 ], authenticationController.createUser);
 
 export default router;

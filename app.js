@@ -1,40 +1,41 @@
-import express from 'express'
-import mongoose from 'mongoose'
-import passport from 'passport'
-import path from 'path'
-import routes from './routes/web.js'
-import dotenv from 'dotenv'
-import swaggerUi from 'swagger-ui-express'
-import swaggerJSDoc from 'swagger-jsdoc'
-import swaggerJSDocOptions from './swaggerJSDocOptions.js'
+import express from 'express';
+import mongoose from 'mongoose';
+import passport from 'passport';
+import path from 'path';
+import dotenv from 'dotenv';
+import swaggerUi from 'swagger-ui-express';
+import swaggerJSDoc from 'swagger-jsdoc';
+import router from './routes/web';
+import swaggerJSDocOptions from './swaggerJSDocOptions';
+
 dotenv.config({ path: path.resolve('.', '.env') });
-const app = express()
-app.use(express.json())
+const app = express();
+app.use(express.json());
 app.use(passport.initialize());
 
-//Database connection
+// Database connection
 const mongoDB = `mongodb://${process.env.DB_HOST}/${process.env.DB_NAME}`;
-mongoose.connect(mongoDB, {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
-//Swagger UI
+// Swagger UI
 const swaggerSpec = swaggerJSDoc(swaggerJSDocOptions);
 const swaggerUiOptions = {
-    swaggerOptions: {
-      basicAuth: {
-        name:   'Authorization',
-        schema: {
-          type: 'basic',
-          in:   'header'
-        },
-        value:  'Basic <user:password>'
-      }
-    }
-  }
+  swaggerOptions: {
+    basicAuth: {
+      name: 'Authorization',
+      schema: {
+        type: 'basic',
+        in: 'header',
+      },
+      value: 'Basic <user:password>',
+    },
+  },
+};
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
 
-app.use('/', routes);
+app.use('/', router);
 app.listen(process.env.APP_PORT, () => {
-    console.log(`Application running at http://localhost:${process.env.APP_PORT}`)
-})
+  console.log(`Application running at http://localhost:${process.env.APP_PORT}`);
+});
