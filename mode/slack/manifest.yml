@@ -1,0 +1,69 @@
+display_information:
+  name: StandupMan
+  description: StandUpMan makes communication easier for teams by allowing team members asynchronously share updates with the team
+  background_color: "#43464d"
+  long_description: "*Standup Bot by StandupMan*\r
+
+    StandupMan ruthlessly puts an end to meeting hell and communication chaos at work thereby making it seamless for everyone to stay updated, improve transparency, work in sync, stay on track, and hit targets in less time.\r
+
+    \r
+
+    Use StandupMan within slack to:\r
+
+    • Post standup notes to StandupMan"
+features:
+  app_home:
+    home_tab_enabled: true
+    messages_tab_enabled: true
+    messages_tab_read_only_enabled: false
+  bot_user:
+    display_name: StandupMan
+    always_online: false
+  slash_commands:
+    - command: /standup-notes
+      url: <standupman's domain>/slack/events
+      description: Post a standup note
+      usage_hint: post
+      should_escape: false
+oauth_config:
+  redirect_urls:
+    - https://slack.com/oauth/v2/authorize?scope=app_mentions:read,channels:history,channels:read,chat:write,commands,groups:history,im:history,mpim:history&client_id=3077295390006.3104815556165
+  scopes:
+    user:
+      - channels:history
+      - groups:history
+      - im:history
+      - mpim:history
+    bot:
+      - app_mentions:read
+      - channels:history
+      - channels:read
+      - chat:write
+      - commands
+      - groups:history
+      - im:history
+      - mpim:history
+      - users:read
+      - users:read.email
+      - im:write
+settings:
+  event_subscriptions:
+    request_url: <standupman's domain>/slack/events
+    user_events:
+      - message.app_home
+      - message.channels
+      - message.groups
+      - message.im
+    bot_events:
+      - app_home_opened
+      - app_mention
+      - message.channels
+      - message.groups
+      - message.im
+      - message.mpim
+  interactivity:
+    is_enabled: true
+    request_url: <standupman's domain>/slack/events
+  org_deploy_enabled: false
+  socket_mode_enabled: false
+  token_rotation_enabled: false

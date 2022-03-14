@@ -1,0 +1,973 @@
+{
+	"info": {
+		"_postman_id": "16da9e28-505b-458e-a615-9962579f573e",
+		"name": "StandupMan",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Root Path",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{auth}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{auth}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{host}}:5000/",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						""
+					]
+				},
+				"description": "This request makes call to the root path (home page) of StandupMan.\n\nOfficial Repository:\n\n*   [https://github.com/standupman/standupman](https://github.com/standupman/standupman)"
+			},
+			"response": []
+		},
+		{
+			"name": "Create User",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{auth}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{auth}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user\": {\n        \"username\": \"standupman\",\n        \"email\": \"standupman@gmail.com\",\n        \"full_name\": \"standupman\",\n        \"password\": \"standupman\",\n        \"timeZone\": \"America/Yellowknife\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:5000/users/register",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"users",
+						"register"
+					]
+				},
+				"description": "This request creates a user, and this document is inserted to the collection (table).\n\nList of timeZone can be found here:\n\n*   [https://en.wikipedia.org/wiki/List_of_tz_database_time_zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)"
+			},
+			"response": []
+		},
+		{
+			"name": "Get User",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{auth}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{auth}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{host}}:5000/users",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"users"
+					]
+				},
+				"description": "This request retrieves the list of users from the collection."
+			},
+			"response": []
+		},
+		{
+			"name": "Delete User",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{auth}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{auth}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://{{host}}:5000/users?userId={{userId}}",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"users"
+					],
+					"query": [
+						{
+							"key": "userId",
+							"value": "{{userId}}"
+						}
+					]
+				},
+				"description": "This request deletes a user from the collection (table), and any reminders scheduled for the user.\n\nIt takes in a query parameter \"userId\" and the value which is the unique user \"_id\" of the document."
+			},
+			"response": []
+		},
+		{
+			"name": "Get User Config",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{auth}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{auth}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{host}}:5000/users/config?userId={{userId}}",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"users",
+						"config"
+					],
+					"query": [
+						{
+							"key": "userId",
+							"value": "{{userId}}"
+						}
+					]
+				},
+				"description": "This request gets the configuration for a specific user.\n\nIt takes in a query parameter \"userId\" and the value which is the unique user \"_id\" of the document."
+			},
+			"response": []
+		},
+		{
+			"name": "Update User Config",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{auth}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{auth}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userconfig\": {\n        \"medium_mode\": \"slack\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:5000/users/config?userId={{userId}}",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"users",
+						"config"
+					],
+					"query": [
+						{
+							"key": "userId",
+							"value": "{{userId}}"
+						}
+					]
+				},
+				"description": "This request updates a users' configuration.\n\nIt takes in a query parameter \"userId\" and the value which is the unique user \"_id\" of the document."
+			},
+			"response": []
+		},
+		{
+			"name": "Get Standup",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{auth}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{auth}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{host}}:5000/standups/",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"standups",
+						""
+					]
+				},
+				"description": "This request retrieves the list of standups from the collection."
+			},
+			"response": []
+		},
+		{
+			"name": "Create new standup without reminders",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{auth}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{auth}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"standup\": {\n        \"name\": \"Daily Standup Team 2\",\n        \"completionTime\": \"02/19/2022\",\n        \"questions\": {\n            \"question_1\": {\n                \"title\": \"What did you do today\",\n                \"response_type\": \"String\"\n            },\n            \"question_2\": {\n                \"title\": \"How many hours did you work today\",\n                \"response_type\": \"String\"\n            },\n            \"question_3\": {\n                \"title\": \"What will you work on till the next standup\",\n                \"response_type\": \"String\"\n            },\n            \"question_4\": {\n                \"title\": \"Any suggestion for improvements\",\n                \"response_type\": \"String\"\n            }\n        }\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:5000/standups/new",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"standups",
+						"new"
+					]
+				},
+				"description": "This request creates a standup, and this document is inserted to the collection (table).\n\n**Optional fields:**\n\n*   **In \"standup\" body;**\n    *   reminder_days\n        *   The days in the week to send out reminders. This is specified in the \"standup\" body. **By default** **not specified will be Mon - Fri**.\n        *   For example :\n            *   `\"reminder_days\": [1, 3, 4, 7]`\n            *   This sends reminder at every week's Mon, Wed, Thur and Sun.\n    *   staticTime\n        *   To state whether to have reminders send out conformed to each user's timezone or based off the UTC time. **By default** **not specified will be false**.\n        *   For example\n            *   `\"staticTime\": true`\n                *   If there's a reminder scheduled at 2 p.m. for this standup, it will be sent out at 2 p.m. to each user according to their timezone.\n            *   `\"staticTime\": false`\n                *   If there's a reminder scheduled at 2 p.m. for this standup, it will be sent out at 2 p.m following the UTC time to all users associated with this standup.\n*   **In \"reminders\" body;**\n    *   This field is specified alongside with the \"standup\" body. Only up to 3 reminders can be scheduled per standup. **By default** **not specified means no reminders will be scheduled** **for the current standup**.\n    *   Passing in the form of `[{\"schedule\": {\"hour\": , \"min\": }}]` means to set a new reminder.\n    *   Params:\n        *   \"schedule\" -\n            *   \"hour\" - number, `0 - 23`\n            *   \"min\" - number, `0 - 59`\n    *   For example;\n        *   `\"reminders\": [{\"schedule\": {\"hour\": 9, \"min\": 45}}]`\n            *   This specifies to schedule a reminder at 9:45 a.m.\n        *   `\"reminders\": [{\"schedule\": {\"hour\": 10, \"min\": 45}}, {\"schedule\": {\"hour\": 14, \"min\": 0}}]`\n            *   This specifies to schedule reminders at 10:45 a.m. and 2 p.m at UTC time.\n\n``` json\n{\n    \"standup\": {\n        ...\n        \"staticTime\": true\n        \"reminder_days\": [1, 3, 4, 7]\n    },\n    \"reminders\": [{\"schedule\": {\"hour\": 9, \"min\": 45}}]\n}\n\n```"
+			},
+			"response": []
+		},
+		{
+			"name": "Create new standup with reminders (with staticTime)",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{auth}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{auth}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"standup\": {\n        \"name\": \"Daily Standup Team 2\",\n        \"completionTime\": \"02/19/2022\",\n        \"questions\": {\n            \"question_1\": {\n                \"title\": \"What did you do today\",\n                \"response_type\": \"String\"\n            },\n            \"question_2\": {\n                \"title\": \"How many hours did you work today\",\n                \"response_type\": \"String\"\n            },\n            \"question_3\": {\n                \"title\": \"What will you work on till the next standup\",\n                \"response_type\": \"String\"\n            },\n            \"question_4\": {\n                \"title\": \"Any suggestion for improvements\",\n                \"response_type\": \"String\"\n            }\n        },\n        \"staticTime\": true\n    },\n    \"reminders\": [{\"schedule\": {\"hour\": 5, \"min\": 45}}, {\"schedule\": {\"hour\": 14, \"min\": 0}}]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:5000/standups/new",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"standups",
+						"new"
+					]
+				},
+				"description": "This request creates a standup, and this document is inserted to the collection (table).\n\n**Optional fields:**\n\n*   **In \"standup\" body;**\n    *   reminder_days\n        *   The days in the week to send out reminders. This is specified in the \"standup\" body. **By default** **not specified will be Mon - Fri**.\n        *   For example :\n            *   `\"reminder_days\": [1, 3, 4, 7]`\n            *   This sends reminder at every week's Mon, Wed, Thur and Sun.\n    *   staticTime\n        *   To state whether to have reminders send out conformed to each user's timezone or based off the UTC time. **By default** **not specified will be false**.\n        *   For example\n            *   `\"staticTime\": true`\n                *   If there's a reminder scheduled at 2 p.m. for this standup, it will be sent out at 2 p.m. to each user according to their timezone.\n            *   `\"staticTime\": false`\n                *   If there's a reminder scheduled at 2 p.m. for this standup, it will be sent out at 2 p.m following the UTC time to all users associated with this standup.\n*   **In \"reminders\" body;**\n    *   This field is specified alongside with the \"standup\" body. Only up to 3 reminders can be scheduled per standup. **By default** **not specified means no reminders will be scheduled** **for the current standup**.\n    *   For example;\n        *   `\"reminders\": [{\"schedule\": {\"hour\": 9, \"min\": 45}}]`\n            *   This specifies to schedule a reminder at 9:45 a.m.\n        *   `\"reminders\": [{\"schedule\": {\"hour\": 10, \"min\": 45}}, {\"schedule\": {\"hour\": 14, \"min\": 0}}]`\n            *   This specifies to schedule reminders at 10:45 a.m. and 2 p.m at UTC time.\n\n``` json\n{\n    \"standup\": {\n        ...\n        \"staticTime\": true\n        \"reminder_days\": [1, 3, 4, 7]\n    },\n    \"reminders\": [{\"schedule\": {\"hour\": 9, \"min\": 45}}]\n}\n\n```"
+			},
+			"response": []
+		},
+		{
+			"name": "Create new standup with reminders (no staticTime)",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{auth}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{auth}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"standup\": {\n        \"name\": \"Daily Standup Team 4\",\n        \"completionTime\": \"02/19/2022\",\n        \"questions\": {\n            \"question_1\": {\n                \"title\": \"What did you do today\",\n                \"response_type\": \"String\"\n            },\n            \"question_2\": {\n                \"title\": \"How many hours did you work today\",\n                \"response_type\": \"String\"\n            },\n            \"question_3\": {\n                \"title\": \"What will you work on till the next standup\",\n                \"response_type\": \"String\"\n            },\n            \"question_4\": {\n                \"title\": \"Any suggestion for improvements\",\n                \"response_type\": \"String\"\n            }\n        },\n        \"staticTime\": false\n    },\n    \"reminders\": [{\"schedule\": {\"hour\": 14, \"min\": 40}}]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:5000/standups/new",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"standups",
+						"new"
+					]
+				},
+				"description": "This request creates a standup, and this document is inserted to the collection (table).\n\n**Optional fields:**\n\n*   **In \"standup\" body;**\n    *   reminder_days\n        *   The days in the week to send out reminders. This is specified in the \"standup\" body. **By default** **not specified will be Mon - Fri****.**\n        *   For example :\n            *   `\"reminder_days\": [1, 3, 4, 7]`\n            *   This sends reminder at Mon, Wed, Thur and Sun.\n    *   staticTime\n        *   To state whether to have reminders send out conformed to each user's timezone or based off the UTC time. **By default** **not specified will be false****.**\n        *   For example\n            *   `\"staticTime\": true`\n                *   If there's a reminder scheduled at 2 p.m. for this standup, it will be sent out at 2 p.m. to each user according to their timezone.\n            *   `\"staticTime\": false`\n                *   If there's a reminder scheduled at 2 p.m. for this standup, it will be sent out at 2 p.m following the UTC time to all users associated with this standup.\n*   **In \"reminders\" body;**\n    *   This field is specified alongside with the \"standup\" body. Only up to 3 reminders can be scheduled per standup. **By default** **not specified means no reminders will be scheduled** **for the current standup**.\n    *   For example;\n        *   `\"reminders\": [{\"schedule\": {\"hour\": 9, \"min\": 45}}]`\n            *   This specifies to schedule a reminder at 9:45 a.m.\n        *   `\"reminders\": [{\"schedule\": {\"hour\": 10, \"min\": 45}}, {\"schedule\": {\"hour\": 14, \"min\": 0}}]`\n            *   This specifies to schedule reminders at 10:45 a.m. and 2 p.m at UTC time.\n\n``` json\n{\n    \"standup\": {\n        ...\n        \"staticTime\": false\n        \"reminder_days\": [1, 3, 4, 7]\n    },\n    \"reminders\": [{\"schedule\": {\"hour\": 9, \"min\": 45}}]\n}\n\n```"
+			},
+			"response": []
+		},
+		{
+			"name": "Update standup with no additional options",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{auth}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{auth}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"standup\": {\n        \"name\": \"Daily Standup Team 3\",\n        \"completionTime\": \"02/19/2022\",\n        \"questions\": {\n            \"question_1\": {\n                \"title\": \"What is your favourite bottle?\",\n                \"response_type\": \"String\"\n            },\n            \"question_2\": {\n                \"title\": \"How many hours did you work today\",\n                \"response_type\": \"String\"\n            },\n            \"question_3\": {\n                \"title\": \"What will you work on till the next standup\",\n                \"response_type\": \"String\"\n            },\n            \"question_4\": {\n                \"title\": \"Any suggestion for improvements\",\n                \"response_type\": \"String\"\n            }\n        }\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:5000/standups/update?standupId={{standupid}}",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"standups",
+						"update"
+					],
+					"query": [
+						{
+							"key": "standupId",
+							"value": "{{standupid}}"
+						}
+					]
+				},
+				"description": "This request updates a particular standup by replacing the whole document with the request body specified.\n\n**Optional fields:**\n\n*   **In \"standup\" body;**\n    *   reminder_days\n        *   The days in the week to send out reminders. This is specified in the \"standup\" body. **By default** **not specified will be Mon - Fri**.\n        *   For example :\n            *   `\"reminder_days\": [1, 3, 4, 7]`\n            *   This sends reminder at every week's Mon, Wed, Thur and Sun.\n    *   staticTime\n        *   To state whether to have reminders send out conformed to each user's timezone or based off the UTC time. **By default** **not specified will be false**.\n        *   For example\n            *   `\"staticTime\": true`\n                *   If there's a reminder scheduled at 2 p.m. for this standup, it will be sent out at 2 p.m. to each user according to their timezone.\n            *   `\"staticTime\": false`\n                *   If there's a reminder scheduled at 2 p.m. for this standup, it will be sent out at 2 p.m following the UTC time to all users associated with this standup.\n*   **In \"reminders\" body;**\n    *   This field is specified alongside with the \"standup\" body. Only up to 3 reminders can be scheduled per standup. **By default** **not specified means the current standup will not be updated to have reminders scheduled**.\n    *   For example;\n        *   `\"reminders\": [{\"schedule\": {\"hour\": 9, \"min\": 45}}]`\n            *   This specifies to schedule a reminder at 9:45 a.m.\n        *   `\"reminders\": [{\"schedule\": {\"hour\": 10, \"min\": 45}}, {\"schedule\": {\"hour\": 14, \"min\": 0}}]`\n            *   This specifies to schedule reminders at 10:45 a.m. and 2 p.m at UTC time.\n\n``` json\n{\n    \"standup\": {\n        ...\n        \"staticTime\": true\n        \"reminder_days\": [1, 3, 4, 7]\n    },\n    \"reminders\": [{\"schedule\": {\"hour\": 9, \"min\": 45}}]\n}\n\n```"
+			},
+			"response": []
+		},
+		{
+			"name": "Update Standup with new reminders",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{auth}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{auth}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"standup\": {\n        \"name\": \"Daily Standup Team 3\",\n        \"completionTime\": \"02/19/2022\",\n        \"questions\": {\n            \"question_1\": {\n                \"title\": \"What is your favourite bottle?\",\n                \"response_type\": \"String\"\n            },\n            \"question_2\": {\n                \"title\": \"How many hours did you work today\",\n                \"response_type\": \"String\"\n            },\n            \"question_3\": {\n                \"title\": \"What will you work on till the next standup\",\n                \"response_type\": \"String\"\n            },\n            \"question_4\": {\n                \"title\": \"Any suggestion for improvements\",\n                \"response_type\": \"String\"\n            }\n        },\n        \"staticTime\": true\n    },\n    \"reminders\": [{\"schedule\": {\"hour\": 8, \"min\": 40}}]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:5000/standups/update?standupId={{standupid}}",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"standups",
+						"update"
+					],
+					"query": [
+						{
+							"key": "standupId",
+							"value": "{{standupid}}"
+						}
+					]
+				},
+				"description": "This request updates a particular standup with the additional \"reminders\" field.\n\n**Optional fields:**\n\n*   **In \"standup\" body;**\n    *   reminder_days\n        *   The days in the week to send out reminders. This is specified in the \"standup\" body. **By default** **not specified will be Mon - Fri**.\n        *   For example :\n            *   `\"reminder_days\": [1, 3, 4, 7]`\n            *   This sends reminder at every week's Mon, Wed, Thur and Sun.\n    *   staticTime\n        *   To state whether to have reminders send out conformed to each user's timezone or based off the UTC time. **By default** **not specified will be false**.\n        *   For example\n            *   `\"staticTime\": true`\n                *   If there's a reminder scheduled at 2 p.m. for this standup, it will be sent out at 2 p.m. to each user according to their timezone.\n            *   `\"staticTime\": false`\n                *   If there's a reminder scheduled at 2 p.m. for this standup, it will be sent out at 2 p.m following the UTC time to all users associated with this standup.\n*   **In \"reminders\" body;**\n    *   This field is specified alongside with the \"standup\" body. Only up to 3 reminders can be scheduled per standup. **By default** **not specified means the current standup will not be updated to have reminders scheduled**.\n    *   Passing in the form of `[{\"schedule\": {\"hour\": , \"min\": }}]` means to set a new reminder.\n    *   Params:\n        *   \"schedule\" -\n            *   \"hour\" - number, `0 - 23`\n            *   \"min\" - number, `0 - 59`\n    *   For example;\n        *   `\"reminders\": [{\"schedule\": {\"hour\": 9, \"min\": 45}}]`\n            *   This specifies to schedule a reminder at 9:45 a.m.\n        *   `\"reminders\": [{\"schedule\": {\"hour\": 10, \"min\": 45}}, {\"schedule\": {\"hour\": 14, \"min\": 0}}]`\n            *   This specifies to schedule reminders at 10:45 a.m. and 2 p.m at UTC time.\n\n``` json\n{\n    \"standup\": {\n        ...\n        \"staticTime\": true\n        \"reminder_days\": [1, 3, 4, 7]\n    },\n    \"reminders\": [{\"schedule\": {\"hour\": 9, \"min\": 45}}]\n}\n\n```"
+			},
+			"response": []
+		},
+		{
+			"name": "Update Standup with existing reminders",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{auth}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{auth}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"standup\": {\n        \"name\": \"Daily Standup Team 3\",\n        \"completionTime\": \"02/19/2022\",\n        \"questions\": {\n            \"question_1\": {\n                \"title\": \"What is your favourite bottle?\",\n                \"response_type\": \"String\"\n            },\n            \"question_2\": {\n                \"title\": \"How many hours did you work today\",\n                \"response_type\": \"String\"\n            },\n            \"question_3\": {\n                \"title\": \"What will you work on till the next standup\",\n                \"response_type\": \"String\"\n            },\n            \"question_4\": {\n                \"title\": \"Any suggestion for improvements\",\n                \"response_type\": \"String\"\n            }\n        },\n        \"staticTime\": false\n    },\n    \"reminders\": [{\"reminder_id\": \"622f78da429e7a589b29c56f\", \"schedule\": {\"hour\": 8, \"min\": 40}}]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:5000/standups/update?standupId={{standupid}}",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"standups",
+						"update"
+					],
+					"query": [
+						{
+							"key": "standupId",
+							"value": "{{standupid}}"
+						}
+					]
+				},
+				"description": "This request updates a particular standup with the additional \"reminders\" field.\n\n**Optional fields:**\n\n*   **In \"standup\" body;**\n    *   reminder_days\n        *   The days in the week to send out reminders. This is specified in the \"standup\" body. **By default** **not specified will be Mon - Fri**.\n        *   For example :\n            *   `\"reminder_days\": [1, 3, 4, 7]`\n            *   This sends reminder at every week's Mon, Wed, Thur and Sun.\n    *   staticTime\n        *   To state whether to have reminders send out conformed to each user's timezone or based off the UTC time. **By default** **not specified will be false**.\n        *   For example\n            *   `\"staticTime\": true`\n                *   If there's a reminder scheduled at 2 p.m. for this standup, it will be sent out at 2 p.m. to each user according to their timezone.\n            *   `\"staticTime\": false`\n                *   If there's a reminder scheduled at 2 p.m. for this standup, it will be sent out at 2 p.m following the UTC time to all users associated with this standup.\n*   **In \"reminders\" body;**\n    *   This field is specified alongside with the \"standup\" body. Only up to 3 reminders can be scheduled per standup. **By default** **not specified means the current standup will not be updated to have reminders scheduled**.\n    *   Passing in the form of `[{\"reminder_id\": , \"schedule\": {\"hour\": , \"min\": }}]` means to **update an existing reminder**.\n    *   Params:\n        \n        *   \"reminder_id\" - `unique document _id for reminder`\n        *   \"schedule\" -\n            *   \"hour\" - number, `0 - 23`\n            *   \"min\" - number, `0 - 59`\n        \n        *   For example;\n            *   `\"reminders\": [{\"reminder_id\": \"622dd14eb419ab5f2c667a5f\", \"schedule\": {\"hour\": 7, \"min\": 40}}]`\n                *   This updates a reminder with the id of \"622dd14eb419ab5f2c667a5f\" to 7:40 a.m. at UTC time\n\n``` json\n{\n    \"standup\": {\n        ...\n        \"staticTime\": true\n        \"reminder_days\": [1, 3, 4, 7]\n    },\n    \"reminders\": [{\"reminder_id\": \"622dd14eb419ab5f2c667a5f\", \"schedule\": {\"hour\": 9, \"min\": 45}}]\n}\n\n```"
+			},
+			"response": []
+		},
+		{
+			"name": "Update Standup with new and existing reminders",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{auth}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{auth}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"standup\": {\n        \"name\": \"Daily Standup Team 3\",\n        \"completionTime\": \"02/19/2022\",\n        \"questions\": {\n            \"question_1\": {\n                \"title\": \"What is your favourite bottle?\",\n                \"response_type\": \"String\"\n            },\n            \"question_2\": {\n                \"title\": \"How many hours did you work today\",\n                \"response_type\": \"String\"\n            },\n            \"question_3\": {\n                \"title\": \"What will you work on till the next standup\",\n                \"response_type\": \"String\"\n            },\n            \"question_4\": {\n                \"title\": \"Any suggestion for improvements\",\n                \"response_type\": \"String\"\n            }\n        },\n        \"staticTime\": false\n    },\n    \"reminders\": [{\"reminder_id\": \"622f75ff8ba2365780cd28c1\", \"schedule\": {\"hour\": 8, \"min\": 40}}, {\"schedule\": {\"hour\": 9, \"min\": 40}}]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:5000/standups/update?standupId={{standupid}}",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"standups",
+						"update"
+					],
+					"query": [
+						{
+							"key": "standupId",
+							"value": "{{standupid}}"
+						}
+					]
+				},
+				"description": "This request updates a particular standup with the additional \"reminders\" field.\n\n**Optional fields:**\n\n*   **In \"standup\" body;**\n    *   reminder_days\n        *   The days in the week to send out reminders. This is specified in the \"standup\" body. **By default** **not specified will be Mon - Fri**.\n        *   For example :\n            *   `\"reminder_days\": [1, 3, 4, 7]`\n            *   This sends reminder at every week's Mon, Wed, Thur and Sun.\n    *   staticTime\n        *   To state whether to have reminders send out conformed to each user's timezone or based off the UTC time. **By default** **not specified will be false**.\n        *   For example\n            *   `\"staticTime\": true`\n                *   If there's a reminder scheduled at 2 p.m. for this standup, it will be sent out at 2 p.m. to each user according to their timezone.\n            *   `\"staticTime\": false`\n                *   If there's a reminder scheduled at 2 p.m. for this standup, it will be sent out at 2 p.m following the UTC time to all users associated with this standup.\n*   **In \"reminders\" body;**\n    *   This field is specified alongside with the \"standup\" body. Only up to 3 reminders can be scheduled per standup. **By default** **not specified means the current standup will not be updated to have reminders scheduled**.\n    *   Passing in the form of `[{\"reminder_id\": , \"schedule\": {\"hour\": , \"min\": }}, {\"schedule\": {\"hour\": , \"min\": }}]` means to **set a new and update an existing reminder**.\n    *   Params;\n        *   \"reminder_id\" - `unique document _id for reminder`\n        *   \"schedule\" -\n            *   \"hour\" - number, `0 - 23`\n            *   \"min\" - number, `0 - 59`\n    *   For example;\n        *   `\"reminders\": [{\"reminder_id\": \"622dd14eb419ab5f2c667a5f\", \"schedule\": {\"hour\": 9, \"min\": 40}}, {\"schedule\": {\"hour\": 10, \"min\": 0}}]`\n            *   This updates the reminder that has a id of \"622dd14eb419ab5f2c667a5f\" to 9:40 a.m. and sets a new reminder at the 10 a.m at UTC time.\n\n``` json\n{\n    \"standup\": {\n        ...\n        \"staticTime\": true\n        \"reminder_days\": [1, 3, 4, 7]\n    },\n    \"reminders\": [{\"reminder_id\": \"622dd14eb419ab5f2c667a5f\", \"schedule\": {\"hour\": 9, \"min\": 40}}, {\"schedule\": {\"hour\": 10, \"min\": 0}}]\n}\n\n```"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Standup",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{auth}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{auth}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://{{host}}:5000/standups?standupId={{standupid}}",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"standups"
+					],
+					"query": [
+						{
+							"key": "stoodupsd",
+							"value": "622418dfaaea206bd475dd64",
+							"disabled": true
+						},
+						{
+							"key": "standupId",
+							"value": "{{standupid}}"
+						}
+					]
+				},
+				"description": "This request deletes a standup from the collection (table).\n\nIt takes in a query parameter \"standupId\" and the value which is the unique standup \"_id\" of the document.\n\nIf there is any existing users associated with this standup, it will be removed from their list of \"standups\" field.\n\nIf there is any reminders associated with this standup, all will be removed."
+			},
+			"response": []
+		},
+		{
+			"name": "Get Standup reminders",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{auth}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{auth}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{host}}:5000/standups/reminders",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"standups",
+						"reminders"
+					]
+				},
+				"description": "This request retrieves the list of scheduled standup reminders from the collection."
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Standup reminder",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{auth}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{auth}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://{{host}}:5000/standups/reminders?reminderId=622f772a8ba2365780cd2933",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"standups",
+						"reminders"
+					],
+					"query": [
+						{
+							"key": "reminderId",
+							"value": "622f772a8ba2365780cd2933"
+						}
+					]
+				},
+				"description": "This request deletes a reminder from a particular standup.\n\nIt takes in a query parameter \"reminderId\" and the value which is the unique reminder \"_id\" of the document.\n\nThe reminder recorded in the standup document will also be removed."
+			},
+			"response": []
+		},
+		{
+			"name": "User Subscribes to a Standup",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{auth}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{auth}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"standup_id\": \"{{standupid}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:5000/standups/subcribe",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"standups",
+						"subcribe"
+					]
+				},
+				"description": "This request updates the user \"standups\" particular field to contain the standup_id specified.\n\nIf the standup user subscribed to contains reminders, it will schedule the reminder for the user."
+			},
+			"response": []
+		},
+		{
+			"name": "User Unsubscribes to a Standup",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{auth}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{auth}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"standup_id\": \"{{standupid}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:5000/standups/unsubcribe",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"standups",
+						"unsubcribe"
+					]
+				},
+				"description": "This request updates the user \"standups\" particular field to remove the standup_id specified.\n\nIf the standup user subscribed to contains reminders, it will remove the reminder that is scheduled for the user."
+			},
+			"response": []
+		},
+		{
+			"name": "Update Standup with answers 1",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{auth}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{auth}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"standup_update\": {\n        \"standup_id\": \"622f75ff8ba2365780cd28bf\",\n        \"user_id\": \"622f44cb77cc4039a485827a\",\n        \"answers\": {\n            \"answer_1\": {\n                \"question_id\": \"question_1\",\n                \"response\": \"Troubleshoot faulty API endpoint at '/help/me'\"\n            },\n            \"answer_2\": {\n                \"question_id\": \"question_2\",\n                \"response\": \"10\"\n            },\n            \"answer_3\": {\n                \"question_id\": \"question_3\",\n                \"response\": \"I will be working to fix another broken endpoint\"\n            },\n            \"answer_4\": {\n                \"question_id\": \"question_4\",\n                \"response\": \"There are too many broken endpoints\"\n            }\n        }\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:5000/standups/complete",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"standups",
+						"complete"
+					]
+				},
+				"description": "This request post to record the standup notes for a particular standup."
+			},
+			"response": []
+		},
+		{
+			"name": "Update Standup with answers 2",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{auth}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{auth}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"standup_update\": {\n        \"standup_id\": \"622439f8538ec680efbd461b\",\n        \"user_id\": \"62245965965b8f945cade0cd\",\n        \"answers\": {\n            \"answer_1\": {\n                \"question_id\": \"question_1\",\n                \"response\": \"I have completed the prototype for the UI design today.\"\n            },\n            \"answer_2\": {\n                \"question_id\": \"question_2\",\n                \"response\": \"2\"\n            },\n            \"answer_3\": {\n                \"question_id\": \"question_3\",\n                \"response\": \"The action items will be fine.\"\n            },\n            \"answer_4\": {\n                \"question_id\": \"question_4\",\n                \"response\": \"The action items will be fine.\"\n            }\n        }\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:5000/standups/complete",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"standups",
+						"complete"
+					]
+				},
+				"description": "This request gets the list of standup related to a particular user."
+			},
+			"response": []
+		},
+		{
+			"name": "Get Standup responses",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{auth}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{auth}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{host}}:5000/standups/responses",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"standups",
+						"responses"
+					]
+				},
+				"description": "This request gets the list of standup responses from the collection."
+			},
+			"response": []
+		}
+	]
+}
