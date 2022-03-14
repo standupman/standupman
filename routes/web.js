@@ -207,6 +207,9 @@ router.delete('/standups/:standupId?', [
  *             $ref: '#/definitions/User'
  */
 router.get('/users', authMiddleware, userController.users);
+router.delete('/users/:userId?', [
+    query('userId').isString().withMessage('Please state a supported query param!'),
+    authMiddleware], userController.deleteUser)
 router.put('/users/config/:userId?', [
     query('userId').isString().withMessage('Please state a supported query param!'),
     body('userconfig').isObject(),

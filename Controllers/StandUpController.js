@@ -8,51 +8,61 @@ import { DateTime } from "luxon";
 
 class StandUpController {
     
-    createNewStandUp (req, res) {
+    async createNewStandUp (req, res) {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
           return res.status(400).json({ errors: errors.array() });
         }
-
-				if (req.body.reminders.length > 3)
-					return res
-            .status(400)
-            .json({
-              message: "Only up to a maximum of 3 reminders can be scheduled for a standup.",
-            });
-
-        StandUp.create(req.body.standup)
-          .then((standup) => {
-            if (req.body.reminders) {
-              Promise.all(
-                req.body.reminders.map(async (reminder) => {
-                  let result = await this.createStandupReminders(
-										standup,
-                    DateTime.utc().day,
-										reminder,
-                  );
-
-                  const reminder_format = {
-                    reminder_id: result._id,
-                    schedule: { hour: reminder.hour, min: reminder.min },
-                  };
-
-                  return StandUp.findByIdAndUpdate(
-                    { _id: standup._id },
-                    { $push: { reminders: reminder_format } }
-                  ).exec();
-                })
-              );
+        
+        try {
+          if (req.body.reminders) {
+            if (req.body.reminders.length > 3) {
+              throw new Error("Only up to a maximum of 3 reminders can be scheduled for a standup.")
             }
-            res.json({ standup });
-          })
-          .catch((e) => {
-            res.json({
-              standup: {
-                message: "There was an error creating new StandUp", error: e
-							}
-            });
+          }
+          
+          let standup_body = req.body.standup;
+          if (standup_body.reminder_days) {
+            req.body.standup.reminders = {};
+            req.body.standup.reminders.reminder_days = standup_body.reminder_days;
+            delete standup_body.reminder_days;
+          }
+          
+          const standup = await StandUp.create(standup_body);
+          if (req.body.reminders) {
+            standup.reminders.reminder_list = await Promise.all(
+              req.body.reminders.map(async (reminder) => {
+                let result = await this.createStandupReminders(
+                  standup,
+                  reminder
+                );
+                
+                const reminder_format = {
+                  reminder_id: result._id,
+                  schedule: {
+                    hour: reminder.schedule.hour,
+                    min: reminder.schedule.min,
+                  },
+                };
+                
+                await StandUp.findByIdAndUpdate(
+                  { _id: standup._id },
+                  { $push: { "reminders.reminder_list": reminder_format } }
+                ).exec();
+                
+                return reminder_format;
+              })
+            );
+          }
+          res.json({ standup });
+        } catch (e) {
+          res.json({
+            standup: {
+              message: "There was an error creating new StandUp",
+              error: e.message,
+            },
           });
+        }
     }
 
     async deleteStandUp (req, res) {
@@ -65,18 +75,16 @@ class StandUpController {
           let standUp = await StandUp.findOneAndDelete({
             _id: req.query.standupId,
           }).exec();
-          if (standUp == null)
+          if (!standUp)
             throw new Error(
               `StandUp of id '${req.query.standupId}' is not found!`
             );
-
-          if (standUp.reminders != null)
+            
+          if (standUp.reminders != null) {
             await StandUpReminder.deleteMany({ standup_id: standUp._id });
-
-          await User.updateMany(
-            {},
-            { $pull: { standups: req.query.standupId } }
-          );
+          }
+          await User.updateMany({}, { $pull: { standups: req.query.standupId } });
+          
           res.json({ success: true, standUp });
         } catch (e) {
           return res
@@ -109,168 +117,201 @@ class StandUpController {
 
         try {
           var standUp = await StandUp.findById(req.query.standupId);
-          if (standUp == null)
-            throw new Error(`StandUp of id: ${req.query.standupId} not found!`);
+          if (!standUp)
+            throw new Error(`StandUp of id '${req.query.standupId}' not found!`);
         } catch (e) {
           return res
             .status(404)
             .json({ message: "StandUp not found!", errors: e.message });
         }
-
-        function remindersListDiff(orginal, user_defined) {
-          return user_defined.filter((obj1) => {
-              return !orginal.some((obj2) => {
-                // staticTime & reminder
-                if (Object.keys(obj2).length > 2) {
-                  return obj1 === String(obj2["_id"]);
-                }
-                // reminder
-                return String(obj1.reminder_id) === String(obj2.reminder_id);
-              });
-            });
+        
+        let standup_body = req.body.standup;
+        let standUp_reminders = standUp.reminders.reminder_list;
+        
+        standup_body.reminders = standUp.reminders
+        if (standup_body.reminder_days) {
+          standup_body.reminders.reminder_days = standup_body.reminder_days;
+          delete standup_body.reminder_days;
         }
-
-        if (req.body.reminders && standUp.reminders.length != 0) {
-          try {
-            let reminderUpdates = req.body.reminders.map((reminder) => {
-              return reminder.reminder_id;
-            });
-            var standUpReminders = await StandUpReminder.find({
-              standup_id: standUp._id,
-            }).lean();
-  
-            let undefinedReminders = remindersListDiff(
-              standUpReminders,
-              reminderUpdates
-            );
-  
-            if (undefinedReminders.length != 0) {
-              throw new Error(
-                `Error in updating reminders. Reminders for id(s) ${undefinedReminders} cannot be found.`
-              );
-            }
-          } catch (e) {
-            return res.status(404).json({
-              message: e.message,
-            });
-          }
-        }
-
+        
         try {
-            const standup_body = req.body.standup;
-						const standup_reminder = req.body.reminders;
-
-            try {
-                if (
-                  standUp.reminders.length != 0 &&
-                  standup_body.staticTime != standUp.staticTime
-                ) {
-                  await StandUpReminder.deleteMany({
-                    standup_id: standUp._id,
+          var new_reminders = [];
+          var update_reminders = [];
+          // checks of reminder(s) option
+          if (req.body.reminders) {
+            req.body.reminders.forEach((reminder) => {
+              if (String(Object.keys(reminder)) === String(["schedule"])) {
+                new_reminders.push(reminder);
+                let total = new_reminders.length + standUp_reminders.length;
+                if (total > 3) {
+                  throw new Error(
+                    `There is currently ${standUp_reminders.length} existing reminders and only up to 3 can be scheduled in a standup!`
+                  );
+                }
+              } else if (
+                String(Object.keys(reminder)) == String(["reminder_id", "schedule"])) {
+                  update_reminders.push(reminder);
+                } else {
+                  throw new Error(`${Object.keys(reminder)} is not valid!`);
+                }
+            });
+            if (update_reminders.length != 0) {
+              try {
+                let reminderUpdates = update_reminders.map((reminder) => {
+                  return reminder.reminder_id;
+                });
+                var standUpReminders = await StandUpReminder.find({
+                  standup_id: standUp._id,
+                }).lean();
+                
+                let undefinedReminders = this.remindersListDiff(
+                  standUpReminders,
+                  reminderUpdates
+                );
+                
+                if (undefinedReminders.length != 0) {
+                  throw new Error(
+                    `Error in updating reminders. Reminders for id(s) '${undefinedReminders}' cannot be found.`
+                  );
+                }
+              } catch (e) {
+                return res.status(404).json({
+                  message: "Error specifing update or create standup reminders.",
+                  errors: e.message,
+                });
+              }
+            }
+          }
+          
+          // update/create reminder(s)
+          try {
+            if (standup_body.staticTime != standUp.staticTime) {
+              standUp.staticTime = standup_body.staticTime
+              await StandUpReminder.deleteMany({
+                standup_id: standUp._id,
+              });
+              
+              if (update_reminders.length != 0) {
+                standUp_reminders = update_reminders.concat(
+                  this.remindersListDiff(update_reminders, standUp_reminders)
+                );
+              }
+              if (new_reminders.length != 0) {
+                standUp_reminders = standUp_reminders.concat(new_reminders);
+              }
+              
+              const reminders = standUp_reminders.map(async reminder => {
+                let users = await User.find({ standups: String(standUp._id) });
+                let result = await this.createStandupReminders(
+                  standUp,
+                  reminder
+                );
+                
+                this.updateStandupReminders(
+                  result._id,
+                  reminder,
+                  standUp.staticTime,
+                  users,
+                  true
+                );
+                
+                const reminder_format = {
+                  reminder_id: result._id,
+                  schedule: {
+                    hour: reminder.schedule.hour,
+                    min: reminder.schedule.min,
+                  },
+                };
+                
+                return reminder_format;
+              });
+              
+              standup_body.reminders.reminder_list = await Promise.all(reminders).catch((e) => {
+                return res.status(404).json({
+                  message: "There is an error enabling staticTime!",
+                  errors: e.message,
+                });
+              });
+            } else {
+              if (update_reminders.length != 0) {
+                const reminders = update_reminders.map(async (reminder) => {
+                  let checkSame = standUp_reminders.some((exist_reminder) => {
+                    if (
+                      exist_reminder.schedule.hour ===
+                        reminder.schedule.hour &&
+                      exist_reminder.schedule.min == reminder.schedule.min
+                    ) {
+                      return true;
+                    }
                   });
-
-                  if (standup_reminder) {
-                    standUp.reminders = standup_reminder.concat(
-                      remindersListDiff(standup_reminder, standUp.reminders)
-                    );
-                  }
-
-									standUp.staticTime = standup_body.staticTime
-                  const curDate = DateTime.utc().day;
-                  const reminders = standUp.reminders.map(async (reminder) => {
-                    let users = await User.find({ standups: String(standUp._id) });
-                    let result = await this.createStandupReminders(
-                      standUp,
-                      curDate,
-                      reminder.schedule
-                    );
-
-                    this.updateStandupReminders(
-                      result._id,
-                      reminder.schedule,
-                      standup_body.staticTime,
-                      users,
-                      true
-                    );
-
-                    const reminder_format = {
-                      reminder_id: result._id,
-                      schedule: {
-                        hour: reminder.schedule.hour,
-                        min: reminder.schedule.min,
-                      },
-                    };
-
-                    return reminder_format;
-                  });
-                  standup_body["reminders"] = await Promise.all(
-                    reminders
-                  ).catch((e) => {
-                    return res.status(404).json({
-                      message: "There is an error enabling staticTime",
-                      errors: e.message,
-                    });
-                  });
-                } else if (standUp.reminders.length != 0 && standup_reminder) {
-                  // update specific existing reminders
-                  const reminders = standup_reminder.map(async (reminder) => {
+                  
+                  // skip update for exact same
+                  if (checkSame) {
+                    return reminder;
+                  } else {
                     let reminderObj = standUpReminders.filter(
-                      (standup_reminder) => {
-                        return standup_reminder._id == reminder.reminder_id;
+                      (existing_reminder) => {
+                        return existing_reminder._id == reminder.reminder_id;
                       }
                     );
-
+                    
                     await this.updateStandupReminders(
                       reminder.reminder_id,
-                      reminder.schedule,
+                      reminder,
                       standUp.staticTime,
                       reminderObj[0].reminder_list
                     );
-
+                    
                     return reminder;
-                  });
-
-                  const resolved = await Promise.all(reminders);
-                  standup_body["reminders"] = resolved.concat(
-                    remindersListDiff(resolved, standUp.reminders)
+                  }
+                });
+                
+                const resolved = await Promise.all(reminders);
+                standup_body.reminders.reminder_list = resolved.concat(
+                  this.remindersListDiff(resolved, standUp_reminders)
+                );
+              }
+              if (new_reminders.length != 0) {
+                const reminders = new_reminders.map(async reminder => {
+                  let result = await this.createStandupReminders(
+                    standUp,
+                    reminder
                   );
-                } else if (standUp.reminders.length == 0 && standup_reminder) {
-                  // user did not set reminder initially
-                  const reminders = standup_reminder.map(async reminder => {
-                    standUp.staticTime = standup_body.staticTime;
-                    let result = await this.createStandupReminders(
-                      standUp,
-                      DateTime.utc().day,
-											reminder
+                  let users = await User.find({ standups: String(standUp._id) });
+                  
+                  if (users.length > 0) {
+                    this.updateStandupReminders(
+                      result._id,
+                      reminder,
+                      standUp.staticTime,
+                      users,
+                      true
                     );
-
-                    let users = await User.find({ standups: String(standUp._id) });
-
-                    if (users.length > 0) {
-											this.updateStandupReminders(
-												result._id,
-												reminder,
-												standUp.staticTime,
-												users,
-												true
-											);
-                    }
-
-										const reminder_format = {
-                      reminder_id: result._id,
-                      schedule: { hour: reminder.hour, min: reminder.min },
-                    };
-
-                    return reminder_format;
-                  });
-                  standup_body["reminders"] = await Promise.all(reminders);
-                }
-            } catch (e) {
-                return res.status(404).json({ message: "Error updating reminders for standup!", errors: e.message }); 
+                  }
+                  
+                  const reminder_format = {
+                    reminder_id: result._id,
+                    schedule: {
+                      hour: reminder.schedule.hour,
+                      min: reminder.schedule.min,
+                    },
+                  };
+                  
+                  return reminder_format;
+                });
+                
+                standup_body.reminders.reminder_list = standup_body.reminders.reminder_list.concat(
+                  await Promise.all(reminders)
+                );
+              }
             }
-            standUp = await StandUp.findOneAndUpdate({ _id: standUp._id }, standup_body, {new: true, runValidators: true});
+          } catch (e) {
+            return res.status(404).json({ message: "Error updating reminders for standup!", errors: e.message }); 
+          }
+          
+          standUp = await StandUp.findOneAndUpdate({ _id: standUp._id }, standup_body, {new: true, runValidators: true});
         } catch (e) {
-            return res.status(404).json({ message: "Error updating standup!", errors: e.message });
+          return res.status(404).json({ message: "Error updating standup!", errors: e.message });
         }
         res.json({ 'standup': standUp });
     }
@@ -280,6 +321,8 @@ class StandUpController {
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
+
+        req.body.standup_update.response = DateTime.utc()
 
         StandUpUpdate.create(req.body.standup_update).then((standUpUpdate) => {
             res.json({ 'standUpUpdate': standUpUpdate });
@@ -320,12 +363,12 @@ class StandUpController {
             { new: true }
           );
 
-          if (standUp.reminders) {
-						await Promise.all(
-              standUp.reminders.map(async (reminder) => {
+          if (standUp.reminders.reminder_list) {
+            await Promise.all(
+              standUp.reminders.reminder_list.map(async (reminder) => {
                 this.updateStandupReminders(
                   reminder.reminder_id,
-                  reminder.schedule,
+                  reminder,
                   standUp.staticTime,
                   [user],
                   true
@@ -367,168 +410,170 @@ class StandUpController {
         }
 
         try {
-            user.standups = user.standups.slice(0,scrumIndex).concat(user.standups.slice(scrumIndex+1))
-            user = await User.findOneAndUpdate({ username: user.username }, {$set:{standups : user.standups}}, {new: true});
+            user.standups = user.standups
+              .slice(0, scrumIndex)
+              .concat(user.standups.slice(scrumIndex + 1));
+            user = await User.findOneAndUpdate(
+              { username: user.username },
+              { $set: { standups: user.standups } },
+              { new: true }
+            );
             if (standUp.reminders) {
-                if(standUp.staticTime)
-                    await StandUpReminder.updateMany({ standup_id: standUp._id}, { $pull: { reminder_list: { user_id: user._id } } })
-                 else
-                    await StandUpReminder.updateMany({ standup_id: standUp._id}, { $pull: { 'reminder_list.$[].user_id': user._id } })
+                if (standUp.staticTime)
+                  await StandUpReminder.updateMany(
+                    { standup_id: standUp._id },
+                    { $pull: { reminder_list: { user_id: user._id } } }
+                  );
+                else
+                  await StandUpReminder.updateMany(
+                    { standup_id: standUp._id },
+                    { $pull: { "reminder_list.$[].user_id": user._id } }
+                  );
             }
         } catch (e) {
-            return res.status(404).json({ message: "Error subscribing user to standup!", errors: e.message });
+            return res
+              .status(404)
+              .json({
+                message: "Error subscribing user to standup!",
+                errors: e.message,
+              });
         }
 
         return res.json({ 'success': true, user: user });
 
     }
 
-    async createStandupReminders (standup, date, schedule) {
+    async createStandupReminders (standup, reminder) {
       try {
-				const reminderConfig = { standup_id: standup._id };
-
-				if (standup.staticTime == false) {
-					const notification_time = DateTime.fromObject(
-						{ day: date, hour: schedule.hour, minute: schedule.min },
-						{ zone: "utc" }
-					);
-					reminderConfig["reminder_list"] = [
-						{ user_id: [], notification_time: notification_time },
-					];
-				}
-
-				let result = await StandUpReminder.create(reminderConfig);
-				return result;
+        const reminderConfig = { standup_id: standup._id };
+        
+        if (standup.staticTime == false) {
+          reminderConfig["reminder_list"] = [{
+            user_id: [],
+            notification_time: this.genDate(reminder.schedule, "utc"),
+          }];
+        }
+        
+        return await StandUpReminder.create(reminderConfig);
       } catch (e) {
-					return new Error({
-						message: "Error creating standup reminders!",
-						errors: e.message,
-        	});
-      	}
-		}
-
-		async updateStandupReminders (reminder_id, schedule, staticTime, users, generate = false) {
-			if (generate == true) {
-				if (staticTime == true) {
-					const list_of_reminders = users.map((user) => {
-						return {
-							user_id: user._id,
-							notification_time: this.genDate(
-								DateTime.utc(),
-								schedule,
-								user.timeZone
-							).plus({ days: 1 }),
-						};
-					});
-
-					let result = await StandUpReminder.findByIdAndUpdate(
-						{ _id: reminder_id },
-						{ $push: { reminder_list: { $each: list_of_reminders } } },
-						{ new: true }
-					);
-					return result;
-				} else {
-					let userIds = users.map((user) => { return user._id; });
-					let standupreminder = await StandUpReminder.findById(reminder_id);
-					let notification_time = DateTime.fromJSDate(
-            standupreminder.reminder_list[0].notification_time,
-            { zone: "utc" }
-          ).plus({ days: 1 });
-					let result = await StandUpReminder.findByIdAndUpdate(
-						{ _id: reminder_id },
-						{ 
-							$push: { "reminder_list.$[].user_id": { $each: userIds } },
-							$set: { "reminder_list.$[].notification_time": notification_time }
-					 	},
-						{ new: true }
-					);
-					return result;
-				}
-			} else {
-				// update in existing reminders
-				const new_reminders = users.map(async notification => {
-					if (staticTime) {
-						const user = await User.findById(notification.user_id)
-							.select("timeZone")
-							.lean();
-
-						notification["notification_time"] = this.genDate(
-							notification["notification_time"], schedule,
-							user.timeZone, true
-						);
-						return notification;
-					} else {
-						notification["notification_time"] = this.genDate(
-							notification["notification_time"], schedule,
-							"utc", true
-						);
-						return notification;
-					}
-				});
-
-				let reminder_list = await Promise.all(new_reminders);
-						
-				let result = StandUpReminder.findByIdAndUpdate(
-					{ _id: reminder_id },
-					{ $set: { reminder_list: reminder_list } },
-					{ new: true }
-				).exec();
-
-				return result;
-			}
-		}
-		
-		async listStandupReminders (req, res) {
-			try {
-			let standup_reminder = await StandUpReminder.find();
-			res.json({ 'standupreminders': standup_reminder });
-			} catch (e) {
-			return res.status(404).json({ message: "Error listing standup reminders!", errors: e.message });
-			}
-		}
-
-		async deleteStandupReminder (req, res) {
-			try {
-				let standup_reminder = await StandUpReminder.findByIdAndDelete({
-					_id: req.query.reminderId,
-				});
-				await StandUp.findByIdAndUpdate(
-					{ _id: standup_reminder.standup_id },
-					{ $pull: { reminders: { reminder_id: standup_reminder._id } } },
-					{new: true}
-				);
-				res.json({ standupreminder: standup_reminder });
-			} catch (e) {
-				return res
-					.status(404)
-					.json({
-						message: `Error delete standup reminder of id ${req.query.reminderId}`,
-						errors: e.message,
-					});
-			}
-		}
-
-		genDate (date, schedule, timeZone, exist = false) {
-			if (exist) {
-			return DateTime.fromJSDate(date, {
-				zone: timeZone,
-			})
-				.set({
-				hour: schedule.hour,
-				minute: schedule.min,
-				})
-				.toUTC();
-			} else {
-			return DateTime.fromObject(
-				{
-				day: date.day,
-				hour: schedule.hour,
-				minute: schedule.min,
-				},
-				{ zone: timeZone }
-			).toUTC();
-			}
-		}
+        return new Error({
+          message: "Error creating standup reminders!",
+          errors: e.message,
+        });
+      }
+    }
+    
+    async updateStandupReminders (reminder_id, reminder, staticTime, users, generate = false) {
+      if (generate) {
+        if (staticTime) {
+          const list_of_reminders = users.map((user) => {
+            return {
+              user_id: user._id,
+              notification_time: this.genDate(reminder.schedule, user.timeZone),
+            };
+          });
+          
+          let result = await StandUpReminder.findByIdAndUpdate(
+            { _id: reminder_id },
+            { $push: { reminder_list: { $each: list_of_reminders } } },
+            { new: true }
+          );
+          
+          return result;
+        } else {
+          let userIds = users.map((user) => { return user._id; });
+          let notification_time = this.genDate(reminder.schedule, 'utc');
+          
+          let result = await StandUpReminder.findByIdAndUpdate(
+            { _id: reminder_id },
+            {
+              $set: { "reminder_list.$[].notification_time": notification_time },
+              $push: { "reminder_list.$[].user_id": { $each: userIds } }
+            },
+            { new: true }
+          );
+          return result;
+        }
+      } else {
+        // update in existing reminders
+        const new_reminders = users.map(async (notification) => {
+          if (staticTime) {
+            const user = await User.findById(notification.user_id).select("timeZone").lean();
+            
+            notification["notification_time"] = this.genDate(
+              reminder.schedule,
+              user.timeZone
+            );
+            
+            return notification;
+          } else {
+            notification["notification_time"] = this.genDate(
+              reminder.schedule,
+              "utc"
+            );
+            
+            return notification;
+          }
+        });
+        
+        let reminder_list = await Promise.all(new_reminders);
+        
+        let result = StandUpReminder.findByIdAndUpdate(
+          { _id: reminder_id },
+          { $set: { reminder_list: reminder_list } },
+          { new: true }
+        ).exec();
+        
+        return result;
+      }
+    }
+    
+    async listStandupReminders (req, res) {
+      try {
+        let standup_reminder = await StandUpReminder.find();
+        res.json({ 'standupreminders': standup_reminder });
+      } catch (e) {
+        return res.status(404).json({ message: "Error listing standup reminders!", errors: e.message });
+      }
+    }
+    
+    async deleteStandupReminder (req, res) {
+      try {
+        let standup_reminder = await StandUpReminder.findByIdAndDelete({
+          _id: req.query.reminderId,
+        });
+        await StandUp.findByIdAndUpdate(
+          { _id: standup_reminder.standup_id },
+          { $pull: { "reminders.reminder_list": { reminder_id: standup_reminder._id } } },
+          {new: true}
+        );
+        res.json({ standupreminder: standup_reminder });
+      } catch (e) {
+        let message = `Error delete standup reminder of id ${req.query.reminderId}`;
+        return res.status(404).json({message: message, errors: e.message});
+      }
+    }
+    
+    genDate (schedule, timeZone) {
+      return DateTime.fromObject({
+        hour: schedule.hour,
+        minute: schedule.min,
+      },
+      { zone: timeZone }).toUTC().plus({ days: 1 });
+    }
+    
+    remindersListDiff (orginal, user_defined) {
+      return user_defined.filter((obj1) => {
+        return !orginal.some((obj2) => {
+          // check update reminder exists
+          if (Object.keys(obj2).length > 2) {
+            return obj1 === String(obj2["_id"]);
+          }
+          // reminder
+          return String(obj1.reminder_id) === String(obj2.reminder_id);
+        });
+      });
+    }
 
 }
 

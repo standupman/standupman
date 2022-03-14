@@ -42,8 +42,8 @@ const StandUpSchema = new Schema({
         required: [true, 'Questions object not present']
     },
     reminders: {
-        type: Array,
-        default: []
+        reminder_days: {type: Array, default: [1, 2, 3, 4, 5]},
+        reminder_list: {type: Array, default: []}
     },
     staticTime: {
         type: Boolean,

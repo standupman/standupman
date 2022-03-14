@@ -12,7 +12,6 @@ const StandUpReminderSchema = new Schema({
       {
         user_id: Object,
         notification_time: Date,
-        last_modified: { type: Date, default: null },
       },
     ],
     default: [],
