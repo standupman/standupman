@@ -42,15 +42,20 @@ const StandUpSchema = new Schema({
         required: [true, 'Questions object not present']
     },
     reminders: {
-        reminder_days: {type: Array, default: [1, 2, 3, 4, 5]},
-        reminder_list: {type: Array, default: []}
-    },
-    staticTime: {
-        type: Boolean,
-        default: false
+        staticTime: {type: Boolean, default: false},
+        days: {type: Array, default: [1, 2, 3, 4, 5]},
+        schedules: [{
+            time: {hour: Number, min: Number},
+            list: [{
+                user_id: Object,
+                notification_time: Date,
+                _id: false
+            }]
+        }]
     },
     user_id: String
 });
 
+StandUpSchema.index({ "reminders.schedules.list.notification_time": -1 }, {name: 'schedule_NotificationIdx'})
 const StandUp = mongoose.model('StandUp', StandUpSchema);
 export default StandUp;

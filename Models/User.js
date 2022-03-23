@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
+import { DateTime } from 'luxon';
 
 const Schema = mongoose.Schema
 
@@ -46,9 +47,23 @@ const UserSchema = new Schema({
     standups: {
         type: Array
     },
-    timeZone: {
-        type: String,
-        required: [true, 'TimeZone is not present']
+    configs: {
+        medium_mode: {
+            type: String,
+            default: "email",
+            required: [true, 'medium_mode is not present.']
+        },
+        timeZone: {
+            type: String,
+            validate: {
+                validator: function (timeZone) {
+                    let dt = DateTime.now().setZone(timeZone);
+                    if (!dt.isValid) throw new Error(dt.invalidExplanation)
+                },
+                message: props => { return props.reason.message }
+            },
+            required: [true, 'TimeZone is not present']
+        }
     }
 
 });
@@ -61,5 +76,4 @@ UserSchema.methods.validatePassword = function (password) {
 };
 
 const User = mongoose.model('User', UserSchema);
-
 export default User;

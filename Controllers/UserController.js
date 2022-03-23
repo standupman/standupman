@@ -1,9 +1,7 @@
-import User from '../Models/User.js'
-import UserConfig from '../Models/UserConfig.js';
+import User from '../Models/User.js';
+import StandUpHelpers from '../utils/StandUpHelpers.js';
 
 import { validationResult } from 'express-validator';
-import StandUpReminder from '../Models/StandUpReminder.js';
-import StandUp from '../Models/StandUp.js';
 
 export default {
   users: (req, res) => {
@@ -12,37 +10,75 @@ export default {
     });
   },
 
-  deleteUser: async (req, res) => {
+  updateUser: async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
     try {
-      var user = await User.findByIdAndDelete(req.query.userId);
-      if (user == null) {
-        throw new Error(`User id '${req.query.userId}' is not found.`);
+      var user = await User.findOne({
+        username: req.user.username,
+      })
+        .select("standups configs.timeZone")
+        .lean();
+
+      if (!user) throw new Error(`User is not found.`);
+      if (
+        req.body.user.configs.timeZone != user.configs.timeZone &&
+        user.standups.length != 0
+      ) {
+        user.configs.timeZone = req.body.user.configs.timeZone;
+        StandUpHelpers.updateStandUpRemindersByUser(
+          user,
+          user.standups,
+          true,
+          true,
+          true
+        );
       }
-      await UserConfig.deleteOne({ user_id: user._id });
-      await Promise.all(
-        user.standups.map(async (standupId) => {
-          var standUp = await StandUp.findById(standupId).lean();
-          if (standUp.reminders)
-            if (standUp.staticTime)
-              return StandUpReminder.updateMany(
-                { standup_id: standupId },
-                { $pull: { reminder_list: { user_id: user._id } } }
-              ).exec();
-            else
-              return StandUpReminder.updateMany(
-                { standup_id: standupId },
-                { $pull: { "reminder_list.$[].user_id": user._id } }
-              ).exec();
-        })
+
+      user = await User.findByIdAndUpdate(
+        user._id,
+        {
+          $set: { configs: req.body.user.configs },
+        },
+        { new: true }
       );
-      return res.json({ 'success': true, user: user });
+      return res.json({ sucess: true, user: user })
     } catch (e) {
-      return res.status(404).json({ message: "Error deleting user!", errror: e.message });
+      return res
+        .status(404)
+        .json({ message: "Error updating user", error: e.message });
+    }
+  },
+
+  deleteUser: async function (req, res) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    try {
+        var user = await User.findOne({
+          username: req.user.username,
+        })
+          .select("standups configs.timeZone")
+          .lean();
+  
+      if (user.standups.length != 0)
+        await StandUpHelpers.updateStandUpRemindersByUser(
+          user,
+          user.standups,
+          true
+        );
+
+      user = await User.findByIdAndDelete(user._id);
+      return res.json({ success: true, user: user })
+    } catch (e) {
+      return res
+        .status(404)
+        .json({ message: "Error deleting user", error: e.message });
     }
   },
 
@@ -52,49 +88,4 @@ export default {
       return res.status(400).json({ errors: errors.array() });
     }
   },
-
-  setUserConfig: async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    try {
-      var user = await User.findById({ _id: req.query.userId }).lean();
-    } catch (e) {
-      return res
-        .status(404)
-        .json({ message: "User not found!", errors: e.message });
-    }
-
-    try {
-      var reqBody = req.body.userconfig;
-      reqBody["user_id"] = user._id;
-      UserConfig.findOneAndUpdate({ user_id: user._id }, reqBody, {new: true}).then(userconfig => {
-        res.json({ userconfig })
-      });
-    } catch (e) {
-      res.json({ userconfig: { message: "There was an error creating new user configurations", errors: e.message } });
-    }
-  },
-
-  getUserConfig: (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    UserConfig.findOne({ user_id: req.query.userId }).then(userconfig => {
-      if (!userconfig) {
-        return res
-          .status(404)
-          .json({
-            message: "User configuration not found!",
-            errors: `User of id ${req.query.userId} does not exists.`,
-          });
-      } else {
-        res.json({ userconfig });
-      }
-    });
-  }
 }

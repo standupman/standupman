@@ -1,7 +1,6 @@
 import User from '../Models/User.js'
 import bcrypt from 'bcrypt'
 import { validationResult } from 'express-validator'
-import UserConfig from '../Models/UserConfig.js';
 
 
 export default {
@@ -24,7 +23,6 @@ export default {
         let salt = bcrypt.genSaltSync(10);
         user.password = bcrypt.hashSync(user.password, salt);
         User.create(user).then(user => {
-            UserConfig.create({ user_id: user._id });
             res.json({user:user});
         }).catch(errors => {
             res.json({message: "User not created", errors:errors});
