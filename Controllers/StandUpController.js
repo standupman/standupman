@@ -53,11 +53,11 @@ class StandUpController {
 
         try {
           let standUp = await StandUp.findOneAndDelete({
-            _id: req.query.standupId,
+            _id: req.params.id,
           }).lean();
           if (!standUp)
             throw new Error(
-              `StandUp of id '${req.query.standupId}' is not found!`
+              `StandUp of id '${req.params.id}' is not found!`
             );
             
           await User.updateMany({}, { $pull: { standups: standUp._id } });
@@ -93,10 +93,10 @@ class StandUpController {
         }
         
         try {
-          var standUp = await StandUp.findById(req.query.standupId);
+          var standUp = await StandUp.findById(req.params.id);
           if (!standUp)
             throw new Error(
-              `StandUp of id '${req.query.standupId}' not found!`
+              `StandUp of id '${req.params.id}' not found!`
             );
 
           let standup_body = req.body.standup;

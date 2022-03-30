@@ -53,35 +53,6 @@ export default {
     }
   },
 
-  deleteUser: async function (req, res) {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    try {
-        var user = await User.findOne({
-          username: req.user.username,
-        })
-          .select("standups configs.timeZone")
-          .lean();
-  
-      if (user.standups.length != 0)
-        await StandUpHelpers.updateStandUpRemindersByUser(
-          user,
-          user.standups,
-          true
-        );
-
-      user = await User.findByIdAndDelete(user._id);
-      return res.json({ success: true, user: user })
-    } catch (e) {
-      return res
-        .status(404)
-        .json({ message: "Error deleting user", error: e.message });
-    }
-  },
-
   subscribeToStandUp: (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

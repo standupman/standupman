@@ -5,7 +5,7 @@ import authenticationController from '../Controllers/AuthenticationController.js
 import auth from '../Middlewares/AuthMiddleware.js'
 
 import { Router } from 'express'
-import { body, query } from 'express-validator'
+import { body } from 'express-validator'
 
 const router = Router()
 const authMiddleware = auth.authenticate('basic', { session: false });
@@ -59,8 +59,6 @@ router.get('/standups', authMiddleware, standUpController.standUpList);
  *             $ref: '#/definitions/StandupUpdate'
  */
 router.get('/standups/responses', authMiddleware, standUpController.standUpResponses);
-router.get('/standups/reminders', authMiddleware, standUpController.listStandupReminders);
-router.delete('/standups/reminders/:reminderId?', authMiddleware, standUpController.deleteStandupReminder);
 router.post('/standups/subcribe', [
     body('standup_id').isString(),
     authMiddleware
@@ -94,7 +92,7 @@ router.post('/standups/new', [
  *     tags: [Standup]
  *     description: Not yet implemented
  */
-router.post('/standups/delete', authMiddleware, standUpController.deleteStandUp);
+ router.delete('/standups/:id', authMiddleware, standUpController.deleteStandUp);
 
 /**
  * @openapi
@@ -161,9 +159,8 @@ router.post('/standups/unsubcribe', [
  *           StandUp:
  *             $ref: '#/definitions/Standup'
  */
- router.put('/standups/update', [
+router.put('/standups/:id', [
     body('standup').isObject(),
-    query('standupId').isString().withMessage('Please state a supported query param!'),
     authMiddleware
 ], standUpController.updateStandUp.bind(standUpController));
 
@@ -187,10 +184,6 @@ router.post('/standups/complete', [
     body('standup_update').isObject(),
     authMiddleware
 ], standUpController.completeStandUp);
-router.delete('/standups/:standupId?', [
-    query('standupId').isString().withMessage('Please state a supported query param!'),
-    authMiddleware
-], standUpController.deleteStandUp);
 
 /**
  * @openapi
@@ -207,16 +200,7 @@ router.delete('/standups/:standupId?', [
  *             $ref: '#/definitions/User'
  */
 router.get('/users', authMiddleware, userController.users);
-router.delete('/users/:userId?', [
-    query('userId').isString().withMessage('Please state a supported query param!'),
-    authMiddleware], userController.deleteUser)
-router.put('/users/config/:userId?', [
-    query('userId').isString().withMessage('Please state a supported query param!'),
-    body('userconfig').isObject(),
-    authMiddleware], userController.setUserConfig)
-router.get('/users/config/:userId?', [
-    query('userId').isString().withMessage('Please state a supported query param!'),
-    authMiddleware], userController.getUserConfig)
+router.put('/users', authMiddleware, userController.updateUser)
 
 //Authentication routes
 
