@@ -52,15 +52,18 @@ class StandUpController {
         }
 
         try {
-          let standUp = await StandUp.findOneAndDelete({
+          let standUp = await StandUp.findOne({ _id: req.params.id })
+            .select("_id")
+            .lean();
+
+          if (!standUp)
+            throw new Error(`StandUp of id '${req.params.id}' is not found!`);
+
+          await User.updateMany({}, { $pull: { standups: standUp._id } });
+
+          standUp = await StandUp.findOneAndDelete({
             _id: req.params.id,
           }).lean();
-          if (!standUp)
-            throw new Error(
-              `StandUp of id '${req.params.id}' is not found!`
-            );
-            
-          await User.updateMany({}, { $pull: { standups: standUp._id } });
           
           res.json({ success: true, standup: standUp });
         } catch (e) {

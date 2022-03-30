@@ -1,17 +1,26 @@
-import User from '../Models/User.js';
 import passport from 'passport';
-import passportHttp from 'passport-http'
+import { ExtractJwt, Strategy } from 'passport-jwt';
+import dotenv from 'dotenv';
+import path from 'path';
+import User from '../Models/User';
 
-const BasicStrategy = passportHttp.BasicStrategy;
+dotenv.config({ path: path.resolve('.', '.env') });
 
-export default passport.use(new BasicStrategy(
-    function(username, password, done) {
-      User.findOne({ username: username }, function (err, user) {
-        console.log(username);
-        if (err) { return done(err); }
-        if (!user) { return done(null, false); }
-        if (!user.validatePassword(password)) { return done(null, false); }
-        return done(null, user);
-      });
-    }
-));
+const opts = {
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: process.env.JWT_SECRET_KEY,
+};
+
+export default passport.use(
+  new Strategy(opts, ((jwtPayload, done) => {
+    User.findOne({ id: jwtPayload.sub }, (err, user) => {
+      if (err) {
+        return done(err);
+      }
+      if (!user) {
+        return done(null, false);
+      }
+      return done(null, user);
+    });
+  })),
+);

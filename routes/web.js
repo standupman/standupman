@@ -1,14 +1,14 @@
-import publicController from '../Controllers/PublicController.js'
-import standUpController from '../Controllers/StandUpController.js'
-import userController from '../Controllers/UserController.js'
-import authenticationController from '../Controllers/AuthenticationController.js'
-import auth from '../Middlewares/AuthMiddleware.js'
+import publicController from '../Controllers/PublicController';
+import standUpController from '../Controllers/StandUpController';
+import userController from '../Controllers/UserController';
+import authenticationController from '../Controllers/AuthenticationController';
+import auth from '../Middlewares/AuthMiddleware';
 
-import { Router } from 'express'
-import { body } from 'express-validator'
+import { Router } from 'express';
+import { body } from 'express-validator';
 
-const router = Router()
-const authMiddleware = auth.authenticate('basic', { session: false });
+const router = Router();
+const authMiddleware = auth.authenticate('jwt', { session: false });
 
 /**
  * @openapi
@@ -80,10 +80,11 @@ router.post('/standups/subcribe', [
  *           standup:
  *             $ref: '#/definitions/Standup'
  */
-router.post('/standups/new', [
-    body('standup').isObject(),
-    authMiddleware
-], standUpController.createNewStandUp);
+router.post(
+  '/standups/new',
+  [body('standup').isObject(), authMiddleware],
+  standUpController.createNewStandUp,
+);
 
 /**
  * @openapi
@@ -113,10 +114,11 @@ router.post('/standups/new', [
  *           success:
  *              type: string
  */
-router.post('/standups/subcribe', [
-    body('standup_id').isString(),
-    authMiddleware
-], standUpController.subscribeToStandUp);
+router.post(
+  '/standups/subcribe',
+  [body('standup_id').isString(), authMiddleware],
+  standUpController.subscribeToStandUp,
+);
 
 /**
  * @openapi
@@ -137,10 +139,11 @@ router.post('/standups/subcribe', [
  *           success:
  *              type: string
  */
-router.post('/standups/unsubcribe', [
-    body('standup_id').isString(),
-    authMiddleware
-], standUpController.unsubscribeToStandUp);
+router.post(
+  '/standups/unsubcribe',
+  [body('standup_id').isString(), authMiddleware],
+  standUpController.unsubscribeToStandUp,
+);
 
 /**
  * @openapi
@@ -180,10 +183,11 @@ router.put('/standups/:id', [
  *           StandUp:
  *             $ref: '#/definitions/StandupUpdate'
  */
-router.post('/standups/complete', [
-    body('standup_update').isObject(),
-    authMiddleware
-], standUpController.completeStandUp);
+router.post(
+  '/standups/complete',
+  [body('standup_update').isObject(), authMiddleware],
+  standUpController.completeStandUp,
+);
 
 /**
  * @openapi
@@ -202,7 +206,7 @@ router.post('/standups/complete', [
 router.get('/users', authMiddleware, userController.users);
 router.put('/users', authMiddleware, userController.updateUser)
 
-//Authentication routes
+// Authentication routes
 
 /**
  * @openapi
@@ -219,7 +223,7 @@ router.put('/users', authMiddleware, userController.updateUser)
  *           user:
  *             $ref: '#/definitions/Login'
  */
-router.post('/login', authMiddleware, authenticationController.login);
+router.post('/login', authenticationController.login);
 
 /**
  * @openapi
@@ -236,11 +240,15 @@ router.post('/login', authMiddleware, authenticationController.login);
  *           user:
  *             $ref: '#/definitions/User'
  */
-router.post('/users/register', [
+router.post(
+  '/users/register',
+  [
     body('user').isObject(),
     body('user.username').isString(),
     body('user.email').isEmail(),
     body('user.password').isString(),
-], authenticationController.createUser);
+  ],
+  authenticationController.createUser,
+);
 
 export default router;
