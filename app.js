@@ -6,11 +6,13 @@ import path from 'path';
 import dotenv from 'dotenv';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJSDoc from 'swagger-jsdoc';
+import cors from 'cors';
 import routes from './routes/web';
 import swaggerJSDocOptions from './swaggerJSDocOptions';
 
 dotenv.config({ path: path.resolve('.', '.env') });
 const app = express();
+app.use(cors());
 app.use(express.json());
 app.use(passport.initialize());
 
