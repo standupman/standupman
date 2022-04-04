@@ -27,7 +27,7 @@ const StandUpUpdateSchema = new Schema({
           return false;
         }
 
-        for (let i = 0; i < keys.length; i = +1) {
+        for (let i = 0; i < keys.length; i += 1) {
           if (Object.keys(answers[keys[i]]).length < 2) {
             return false;
           }
@@ -54,7 +54,10 @@ const StandUpUpdateSchema = new Schema({
   },
 });
 
-StandUpUpdateSchema.index({ "standup_id": 1, "user_id": 1, "responseTime": -1 }, { name: "standupupdate_Idx"});
+StandUpUpdateSchema.index(
+  { standup_id: 1, user_id: 1, responseTime: -1 },
+  { name: 'standupupdate_Idx' },
+);
 
 const StandUpUpdate = mongoose.model('StandUpUpdate', StandUpUpdateSchema);
 export default StandUpUpdate;

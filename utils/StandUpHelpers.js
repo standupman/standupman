@@ -1,6 +1,9 @@
-import StandUp from "../Models/StandUp.js";
+/* eslint-disable object-shorthand */
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable func-names */
+import { DateTime } from 'luxon';
 
-import { DateTime } from "luxon";
+import StandUp from '../Models/StandUp';
 
 const StandUpHelpers = {
   /**
@@ -15,7 +18,7 @@ const StandUpHelpers = {
         hour: time.hour,
         minute: time.min,
       },
-      { zone: timeZone }
+      { zone: timeZone },
     )
       .toUTC()
       .plus({ days: 1 });
@@ -28,16 +31,14 @@ const StandUpHelpers = {
    * @returns {Array} - Differences contained in arr2 but not in arr1
    */
   remindersArrDiff: function (arr1, arr2) {
-    return arr2.filter((arr2_obj) => {
-      return !arr1.some((arr1_obj) => {
-        // check update reminder exists
-        if (typeof arr2_obj === "string") {
-          return arr2_obj === String(arr1_obj._id);
-        }
-        // reminder
-        return String(arr2_obj._id) === String(arr1_obj._id);
-      });
-    });
+    return arr2.filter((arr2Obj) => !arr1.some((arr1Obj) => {
+      // check update reminder exists
+      if (typeof arr2Obj === 'string') {
+        return arr2Obj === String(arr1Obj._id);
+      }
+      // reminder
+      return String(arr2Obj._id) === String(arr1Obj._id);
+    }));
   },
 
   /**
@@ -54,52 +55,54 @@ const StandUpHelpers = {
     standups,
     remove = false,
     generate = false,
-    switchZone = false
+    switchZone = false,
   ) {
     standups.forEach(async (standupId) => {
-      let standUp = await StandUp.findById(standupId).select("reminders");
-      if (standUp.reminders.schedules.length != 0) {
+      const standUp = await StandUp.findById(standupId).select('reminders');
+      if (standUp.reminders.schedules.length !== 0) {
         if (standUp.reminders.staticTime) {
-          if (remove)
+          if (remove) {
             await StandUp.findByIdAndUpdate(standupId, {
-              $pull: { "reminders.schedules.$[].list": { user_id: user._id } },
+              $pull: { 'reminders.schedules.$[].list': { user_id: user._id } },
             }).exec();
+          }
 
           if (generate) {
             await Promise.all(
               standUp.reminders.schedules.map((schedule) => {
-                let userRem = {
+                const userRem = {
                   user_id: user._id,
                   notification_time: this.genDate(
                     schedule.time,
-                    user.configs.timeZone
+                    user.configs.timeZone,
                   ),
                 };
                 return StandUp.findOneAndUpdate(
                   { _id: standupId },
                   {
                     $push: {
-                      "reminders.schedules.$[schedule].list": userRem,
+                      'reminders.schedules.$[schedule].list': userRem,
                     },
                   },
                   {
-                    arrayFilters: [{ "schedule._id": schedule._id }],
-                  }
+                    arrayFilters: [{ 'schedule._id': schedule._id }],
+                  },
                 );
-              })
+              }),
             );
           }
-        } else {
-          if (!switchZone) {
-            if (remove)
-              await StandUp.findByIdAndUpdate(standupId, {
-                $pull: { "reminders.schedules.$[].list.$[].user_id": user._id },
-              }).exec();
+        }
+        if (!switchZone) {
+          if (remove) {
+            await StandUp.findByIdAndUpdate(standupId, {
+              $pull: { 'reminders.schedules.$[].list.$[].user_id': user._id },
+            }).exec();
+          }
 
-            if (generate)
-              await StandUp.findByIdAndUpdate(standupId, {
-                $push: { "reminders.schedules.$[].list.$[].user_id": user._id },
-              }).exec();
+          if (generate) {
+            await StandUp.findByIdAndUpdate(standupId, {
+              $push: { 'reminders.schedules.$[].list.$[].user_id': user._id },
+            }).exec();
           }
         }
       }

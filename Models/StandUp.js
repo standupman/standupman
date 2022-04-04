@@ -5,13 +5,13 @@ const { Schema } = mongoose;
 const StandUpSchema = new Schema({
   name: {
     type: String,
-    minlength: [4, "StandUp name too short"],
-    required: [true, "StandUp name not present"],
+    minlength: [4, 'StandUp name too short'],
+    required: [true, 'StandUp name not present'],
   },
   description: String,
   completionTime: {
     type: Date,
-    required: [true, "CompletionTime must be present"],
+    required: [true, 'CompletionTime must be present'],
   },
   questions: {
     type: Object,
@@ -40,7 +40,7 @@ const StandUpSchema = new Schema({
       message:
         'A minimum of one question must be present with the form { question_1: {title: "What did you do today", response_type: "String"}, question_2: {title: "How many hours did you work today", response_type: "Number"}}',
     },
-    required: [true, "Questions object not present"],
+    required: [true, 'Questions object not present'],
   },
   reminders: {
     staticTime: { type: Boolean, default: false },
@@ -62,8 +62,8 @@ const StandUpSchema = new Schema({
 });
 
 StandUpSchema.index(
-  { "reminders.schedules.list.notification_time": -1 },
-  { name: "schedule_NotificationIdx" }
+  { 'reminders.schedules.list.notification_time': -1 },
+  { name: 'schedule_NotificationIdx' },
 );
 const StandUp = mongoose.model('StandUp', StandUpSchema);
 export default StandUp;

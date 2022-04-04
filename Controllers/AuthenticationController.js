@@ -4,6 +4,7 @@ import { validationResult } from 'express-validator';
 import dotenv from 'dotenv';
 import path from 'path';
 import jwt from 'jsonwebtoken';
+
 import User from '../Models/User';
 
 function genToken(user) {
@@ -28,10 +29,7 @@ export default {
         // eslint-disable-next-line no-console
         console.log('Error Happened In auth /token Route');
       } else {
-        const payload = {
-          sub: user.id,
-        };
-        const token = genToken(payload);
+        const token = genToken(user);
         res.status(200).json({ token });
       }
     });

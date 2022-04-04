@@ -1,13 +1,13 @@
-import User from '../Models/User.js';
-import StandUpHelpers from '../utils/StandUpHelpers.js';
-
+/* eslint-disable no-underscore-dangle */
 import { validationResult } from 'express-validator';
+
 import User from '../Models/User';
+import StandUpHelpers from '../utils/StandUpHelpers';
 
 export default {
   users: (req, res) => {
     User.find().then((users) => {
-      res.json({ users: users });
+      res.json({ users });
     });
   },
 
@@ -18,16 +18,16 @@ export default {
     }
 
     try {
-      var user = await User.findOne({
+      let user = await User.findOne({
         username: req.user.username,
       })
-        .select("standups configs.timeZone")
+        .select('standups configs.timeZone')
         .lean();
 
-      if (!user) throw new Error(`User is not found.`);
+      if (!user) throw new Error('User is not found.');
       if (
-        req.body.user.configs.timeZone != user.configs.timeZone &&
-        user.standups.length != 0
+        req.body.user.configs.timeZone !== user.configs.timeZone
+        && user.standups.length !== 0
       ) {
         user.configs.timeZone = req.body.user.configs.timeZone;
         StandUpHelpers.updateStandUpRemindersByUser(
@@ -35,7 +35,7 @@ export default {
           user.standups,
           true,
           true,
-          true
+          true,
         );
       }
 
@@ -44,13 +44,13 @@ export default {
         {
           $set: { configs: req.body.user.configs },
         },
-        { new: true }
+        { new: true },
       );
-      return res.json({ sucess: true, user: user })
+      return res.json({ sucess: true, user });
     } catch (e) {
       return res
         .status(404)
-        .json({ message: "Error updating user", error: e.message });
+        .json({ message: 'Error updating user', error: e.message });
     }
   },
 
@@ -60,5 +60,5 @@ export default {
       return res.status(400).json({ errors: errors.array() });
     }
     return res.status(200).json({});
-  }
-}
+  },
+};

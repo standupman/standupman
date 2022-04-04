@@ -1,11 +1,11 @@
+import { Router } from 'express';
+import { body } from 'express-validator';
+
 import publicController from '../Controllers/PublicController';
 import standUpController from '../Controllers/StandUpController';
 import userController from '../Controllers/UserController';
 import authenticationController from '../Controllers/AuthenticationController';
 import auth from '../Middlewares/AuthMiddleware';
-
-import { Router } from 'express';
-import { body } from 'express-validator';
 
 const router = Router();
 const authMiddleware = auth.authenticate('jwt', { session: false });
@@ -21,12 +21,10 @@ const authMiddleware = auth.authenticate('jwt', { session: false });
  *         description: Returns a mysterious string.
  */
 router.get('/', publicController.welcome);
-router.post("/standups/new", [
-    body("standup").isObject(),
-    authMiddleware,
-  ],
-  standUpController.createNewStandUp.bind(standUpController)
-);
+router.post('/standups/new', [
+  body('standup').isObject(),
+  authMiddleware,
+], standUpController.createNewStandUp.bind(standUpController));
 
 /**
  * @openapi
@@ -59,10 +57,6 @@ router.get('/standups', authMiddleware, standUpController.standUpList);
  *             $ref: '#/definitions/StandupUpdate'
  */
 router.get('/standups/responses', authMiddleware, standUpController.standUpResponses);
-router.post('/standups/subcribe', [
-    body('standup_id').isString(),
-    authMiddleware
-], standUpController.subscribeToStandUp.bind(standUpController));
 
 /**
  * @openapi
@@ -93,7 +87,7 @@ router.post(
  *     tags: [Standup]
  *     description: Not yet implemented
  */
- router.delete('/standups/:id', authMiddleware, standUpController.deleteStandUp);
+router.delete('/standups/:id', authMiddleware, standUpController.deleteStandUp);
 
 /**
  * @openapi
@@ -115,14 +109,14 @@ router.post(
  *              type: string
  */
 router.post(
-  '/standups/subcribe',
+  '/standups/subscribe',
   [body('standup_id').isString(), authMiddleware],
   standUpController.subscribeToStandUp,
 );
 
 /**
  * @openapi
- * /standups/unsubcribe:
+ * /standups/unsubscribe:
  *   post:
  *     description: Unsubscribe to a standup
  *     tags: [Standup]
@@ -140,7 +134,7 @@ router.post(
  *              type: string
  */
 router.post(
-  '/standups/unsubcribe',
+  '/standups/unsubscribe',
   [body('standup_id').isString(), authMiddleware],
   standUpController.unsubscribeToStandUp,
 );
@@ -163,8 +157,8 @@ router.post(
  *             $ref: '#/definitions/Standup'
  */
 router.put('/standups/:id', [
-    body('standup').isObject(),
-    authMiddleware
+  body('standup').isObject(),
+  authMiddleware,
 ], standUpController.updateStandUp.bind(standUpController));
 
 /**
@@ -204,7 +198,7 @@ router.post(
  *             $ref: '#/definitions/User'
  */
 router.get('/users', authMiddleware, userController.users);
-router.put('/users', authMiddleware, userController.updateUser)
+router.put('/users', authMiddleware, userController.updateUser);
 
 // Authentication routes
 

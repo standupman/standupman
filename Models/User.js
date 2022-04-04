@@ -1,5 +1,5 @@
-import mongoose from 'mongoose'
-import bcrypt from 'bcrypt'
+import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
 import { DateTime } from 'luxon';
 
 const { Schema } = mongoose;
@@ -28,43 +28,43 @@ const UserSchema = new Schema({
     required: true,
   },
   full_name: {
-      type: String,
-      minlength: [4, 'Full name  too short'],
-      required: [true, 'Full name not present']
+    type: String,
+    minlength: [4, 'Full name  too short'],
+    required: [true, 'Full name not present'],
   },
   password: {
-      type: String,
-      minlength: [4, 'Password too short'],
-      required: [true, 'Password not present'],
-      hidden: true
+    type: String,
+    minlength: [4, 'Password too short'],
+    required: [true, 'Password not present'],
+    hidden: true,
   },
   created_at: {
-      type: Date,
+    type: Date,
   },
   updated_at: {
-      type: Date
+    type: Date,
   },
   standups: {
-      type: Array
+    type: Array,
   },
   configs: {
-      medium_mode: {
-          type: String,
-          default: "email",
-          required: [true, 'medium_mode is not present.']
+    medium_mode: {
+      type: String,
+      default: 'email',
+      required: [true, 'medium_mode is not present.'],
+    },
+    timeZone: {
+      type: String,
+      validate: {
+        validator(timeZone) {
+          const dt = DateTime.now().setZone(timeZone);
+          if (!dt.isValid) throw new Error(dt.invalidExplanation);
+        },
+        message: (props) => props.reason.message,
       },
-      timeZone: {
-          type: String,
-          validate: {
-              validator: function (timeZone) {
-                  let dt = DateTime.now().setZone(timeZone);
-                  if (!dt.isValid) throw new Error(dt.invalidExplanation)
-              },
-              message: props => { return props.reason.message }
-          },
-          required: [true, 'TimeZone is not present']
-      }
-  }
+      required: [true, 'TimeZone is not present'],
+    },
+  },
 
 });
 

@@ -1,60 +1,60 @@
-export const views = {
+const views = {
   modal_view: (slackUserId) => {
-    let view = {
-      type: "modal",
-      callback_id: "modal_post",
+    const view = {
+      type: 'modal',
+      callback_id: 'modal_post',
       title: {
-        type: "plain_text",
-        text: "Standup Responses",
+        type: 'plain_text',
+        text: 'Standup Responses',
         emoji: true,
       },
       blocks: [
         {
-          type: "section",
+          type: 'section',
           text: {
-            type: "plain_text",
+            type: 'plain_text',
             text: `Hey <@${slackUserId}> :wave:! Submit your standup responses through here!`,
             emoji: true,
           },
         },
         {
-          type: "divider",
+          type: 'divider',
         },
         {
-          type: "section",
-          block_id: "standup_select",
+          type: 'section',
+          block_id: 'standup_select',
           text: {
-            type: "mrkdwn",
-            text: "Standup to post response: ",
+            type: 'mrkdwn',
+            text: 'Standup to post response: ',
           },
           accessory: {
-            type: "static_select",
+            type: 'static_select',
             placeholder: {
-              type: "plain_text",
-              text: "Select an standup",
+              type: 'plain_text',
+              text: 'Select an standup',
               emoji: true,
             },
             options: [],
-            action_id: "standup_list",
+            action_id: 'standup_list',
           },
         },
       ],
       close: {
-        type: "plain_text",
-        text: "Cancel",
+        type: 'plain_text',
+        text: 'Cancel',
       },
     };
     return view;
   },
-  
+
   app_home_opened: (slackUser) => {
-    let view = {
-      type: "home",
+    const view = {
+      type: 'home',
       blocks: [
         {
-          type: "section",
+          type: 'section',
           text: {
-            type: "mrkdwn",
+            type: 'mrkdwn',
             text: `*Welcome, <@${slackUser}> :leaves:*`,
           },
         },
@@ -63,3 +63,5 @@ export const views = {
     return view;
   },
 };
+
+export default views;
