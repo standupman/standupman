@@ -2,7 +2,6 @@
 import { validationResult } from 'express-validator';
 
 import User from '../Models/User';
-import StandUpHelpers from '../utils/StandUpHelpers';
 
 export default {
   users: (req, res) => {
@@ -21,28 +20,15 @@ export default {
       let user = await User.findOne({
         username: req.user.username,
       })
-        .select('standups configs.timeZone')
+        .select('_id')
         .lean();
 
       if (!user) throw new Error('User is not found.');
-      if (
-        req.body.user.configs.timeZone !== user.configs.timeZone
-        && user.standups.length !== 0
-      ) {
-        user.configs.timeZone = req.body.user.configs.timeZone;
-        StandUpHelpers.updateStandUpRemindersByUser(
-          user,
-          user.standups,
-          true,
-          true,
-          true,
-        );
-      }
 
       user = await User.findByIdAndUpdate(
         user._id,
         {
-          $set: { configs: req.body.user.configs },
+          $set: { configs: req.body.configs },
         },
         { new: true },
       );

@@ -3,7 +3,7 @@
 /* eslint-disable func-names */
 import { DateTime } from 'luxon';
 
-import StandUp from '../Models/StandUp';
+import StandUp from '../../Models/StandUp';
 
 const StandUpHelpers = {
   /**
@@ -25,6 +25,35 @@ const StandUpHelpers = {
   },
 
   /**
+   * compares two ISODate time value
+   * @param {Date} datetime1 - ISODate
+   * @param {Date} datetime2 - ISODate
+   * @returns {Boolean}
+   */
+  checkTimeEqual: function (datetime1, datetime2) {
+    return datetime1.substring(11, 19) === datetime2.substring(11, 19);
+  },
+
+  /**
+   * checks request schedule time object
+   * @param {Object} schedule - Schedule time object
+   * @returns {Boolean|Error}
+   */
+  checkTimeOption: function (schedule) {
+    if (String(Object.keys(schedule.time)) === 'hour,min') {
+      const { hour, min } = schedule.time;
+      if (hour < 0 || hour > 23 || min < 0 || min > 59) {
+        throw new Error('Specify time hour range to be 0 - 23 and min to be 0 - 59');
+      }
+      return true;
+    }
+    throw new Error(
+      'Schedule time must be specified in the form of '
+      + '{ "time" : { "hour" : xx, "min": xx }}',
+    );
+  },
+
+  /**
    * find difference of arr2 against arr1
    * @param {Array} arr1 - Array to check against
    * @param {Array} arr2 - Array to be checked
@@ -42,12 +71,24 @@ const StandUpHelpers = {
   },
 
   /**
+   * sorts an array by its element
+   * @param {Array} array - The array of values to be sorted
+   * @param {Boolean} prop - Sort with specific reminder schedules object
+   * @returns {Array} - Sorted array
+   */
+  sortArr: function (array, prop = false) {
+    if (prop) {
+      return array.sort((a, b) => a.time.hour - b.time.hour || a.time.min - b.time.min);
+    }
+    return array.sort();
+  },
+
+  /**
    * update standup reminders based on user action
    * @param {Object} user - User object (document)
    * @param {Array} standups - The array of standup IDs user is associated with
    * @param {Boolean} remove - Remove user from list of scheduled reminders
    * @param {Boolean} generate - Add user to list of scheduled reminders
-   * @param {Boolean} switchZone - Only affect standups with staticTime
    * @returns {} - No return
    */
   updateStandUpRemindersByUser: function (
@@ -55,55 +96,24 @@ const StandUpHelpers = {
     standups,
     remove = false,
     generate = false,
-    switchZone = false,
   ) {
     standups.forEach(async (standupId) => {
       const standUp = await StandUp.findById(standupId).select('reminders');
       if (standUp.reminders.schedules.length !== 0) {
-        if (standUp.reminders.staticTime) {
-          if (remove) {
-            await StandUp.findByIdAndUpdate(standupId, {
-              $pull: { 'reminders.schedules.$[].list': { user_id: user._id } },
-            }).exec();
-          }
-
-          if (generate) {
-            await Promise.all(
-              standUp.reminders.schedules.map((schedule) => {
-                const userRem = {
-                  user_id: user._id,
-                  notification_time: this.genDate(
-                    schedule.time,
-                    user.configs.timeZone,
-                  ),
-                };
-                return StandUp.findOneAndUpdate(
-                  { _id: standupId },
-                  {
-                    $push: {
-                      'reminders.schedules.$[schedule].list': userRem,
-                    },
-                  },
-                  {
-                    arrayFilters: [{ 'schedule._id': schedule._id }],
-                  },
-                );
-              }),
-            );
-          }
+        if (remove) {
+          await StandUp.findByIdAndUpdate(standupId, {
+            $pull: {
+              'reminders.schedules.$[].notification.users': user._id,
+            },
+          }).exec();
         }
-        if (!switchZone) {
-          if (remove) {
-            await StandUp.findByIdAndUpdate(standupId, {
-              $pull: { 'reminders.schedules.$[].list.$[].user_id': user._id },
-            }).exec();
-          }
 
-          if (generate) {
-            await StandUp.findByIdAndUpdate(standupId, {
-              $push: { 'reminders.schedules.$[].list.$[].user_id': user._id },
-            }).exec();
-          }
+        if (generate) {
+          await StandUp.findByIdAndUpdate(standupId, {
+            $push: {
+              'reminders.schedules.$[].notification.users': user._id,
+            },
+          }).exec();
         }
       }
     });

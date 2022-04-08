@@ -38,49 +38,19 @@ const Reminders = {
   },
 
   processReminders: async function (standups, date) {
+    // eslint-disable-next-line consistent-return
     const batchProcess = standups.map(async (standup) => {
       if (standup.reminders.days.includes(date.weekday)) {
+        // eslint-disable-next-line consistent-return
         return standup.reminders.schedules.map(async (schedule) => {
-          if (standup.reminders.staticTime) {
-            return schedule.list.map(async (user) => {
-              if (user.notification_time < date) {
-                try {
-                  await this.sendReminders(user.user_id, standup);
-
-                  const nextReminder = this.nextReminder(
-                    user.notification_time,
-                    'utc',
-                  );
-
-                  return StandUp.findOneAndUpdate(
-                    { _id: standup._id },
-                    {
-                      $set: {
-                        'reminders.schedules.$[schedule].list.$[user].notification_time':
-                            nextReminder,
-                      },
-                    },
-                    {
-                      arrayFilters: [
-                        { 'schedule._id': schedule._id },
-                        { 'user.user_id': user.user_id },
-                      ],
-                    },
-                  ).exec();
-                } catch (e) {
-                  console.error('Error while sending reminders: ', e.message);
-                }
-              }
-            });
-          }
           try {
-            if (schedule.list[0].notification_time < date) {
+            if (schedule.notification.time < date) {
               await Promise.all(
-                schedule.list[0].user_id.map(async (user) => this.sendReminders(user, standup)),
+                schedule.notification.users.map(async (user) => this.sendReminders(user, standup)),
               );
 
               const nextReminder = this.nextReminder(
-                schedule.list[0].notification_time,
+                schedule.notification.time,
                 'utc',
               );
 
@@ -88,7 +58,7 @@ const Reminders = {
                 { _id: standup._id },
                 {
                   $set: {
-                    'reminders.schedules.$[schedule].list.$[].notification_time':
+                    'reminders.schedules.$[schedule].notification.time':
                         nextReminder,
                   },
                 },
@@ -113,7 +83,7 @@ const Reminders = {
 const remindersJob = new CronJob('*/3 * * * *', async () => {
   const date = DateTime.utc();
   const standups = await StandUp.find({
-    'reminders.schedules.list.notification_time': { $lt: date },
+    'reminders.schedules.notification.time': { $lt: date },
   })
     .select('name reminders')
     .lean();

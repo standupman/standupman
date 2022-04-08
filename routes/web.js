@@ -1,11 +1,12 @@
 import { Router } from 'express';
-import { body } from 'express-validator';
+import { body, checkSchema } from 'express-validator';
 
 import publicController from '../Controllers/PublicController';
 import standUpController from '../Controllers/StandUpController';
 import userController from '../Controllers/UserController';
 import authenticationController from '../Controllers/AuthenticationController';
 import auth from '../Middlewares/AuthMiddleware';
+import StandUpValidator from '../utils/validators/StandUpValidator';
 
 const router = Router();
 const authMiddleware = auth.authenticate('jwt', { session: false });
@@ -21,10 +22,6 @@ const authMiddleware = auth.authenticate('jwt', { session: false });
  *         description: Returns a mysterious string.
  */
 router.get('/', publicController.welcome);
-router.post('/standups/new', [
-  body('standup').isObject(),
-  authMiddleware,
-], standUpController.createNewStandUp.bind(standUpController));
 
 /**
  * @openapi
@@ -74,11 +71,10 @@ router.get('/standups/responses', authMiddleware, standUpController.standUpRespo
  *           standup:
  *             $ref: '#/definitions/Standup'
  */
-router.post(
-  '/standups/new',
-  [body('standup').isObject(), authMiddleware],
-  standUpController.createNewStandUp,
-);
+router.post('/standups/new', [
+  checkSchema(StandUpValidator.post),
+  authMiddleware,
+], standUpController.createNewStandUp.bind(standUpController));
 
 /**
  * @openapi
@@ -157,7 +153,7 @@ router.post(
  *             $ref: '#/definitions/Standup'
  */
 router.put('/standups/:id', [
-  body('standup').isObject(),
+  checkSchema(StandUpValidator.put),
   authMiddleware,
 ], standUpController.updateStandUp.bind(standUpController));
 

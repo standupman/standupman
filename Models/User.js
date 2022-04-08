@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
-import { DateTime } from 'luxon';
 
 const { Schema } = mongoose;
 
@@ -52,17 +51,6 @@ const UserSchema = new Schema({
       type: String,
       default: 'email',
       required: [true, 'medium_mode is not present.'],
-    },
-    timeZone: {
-      type: String,
-      validate: {
-        validator(timeZone) {
-          const dt = DateTime.now().setZone(timeZone);
-          if (!dt.isValid) throw new Error(dt.invalidExplanation);
-        },
-        message: (props) => props.reason.message,
-      },
-      required: [true, 'TimeZone is not present'],
     },
   },
 

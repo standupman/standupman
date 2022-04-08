@@ -6,7 +6,7 @@ import { DateTime } from 'luxon';
 import User from '../Models/User';
 import StandUp from '../Models/StandUp';
 import StandUpUpdate from '../Models/StandUpUpdate';
-import StandUpHelpers from '../utils/StandUpHelpers';
+import StandUpHelpers from '../utils/helpers/StandUpHelpers';
 
 class StandUpController {
   async createNewStandUp(req, res) {
@@ -15,27 +15,21 @@ class StandUpController {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const standupBody = req.body.standup;
+    const { body } = req;
     try {
-      if (standupBody.reminders) {
-        if (standupBody.reminders.schedules) {
-          if (standupBody.reminders.schedules.length > 3) {
-            throw new Error(
-              'Only up to a maximum of 3 reminders can be scheduled for a standup.',
-            );
-          }
+      if (body.reminders) {
+        const { reminders } = body;
 
-          const schedules = standupBody.reminders.schedules.map((schedule) => {
-            if (standupBody.reminders.staticTime) {
-              return this.createStandupReminders(schedule, true);
-            }
-            return this.createStandupReminders(schedule, false);
+        if (reminders.schedules && reminders.schedules.length > 0) {
+          // eslint-disable-next-line arrow-body-style
+          const schedules = reminders.schedules.map((schedule) => {
+            return this.createStandupReminders(schedule, reminders.timeZone);
           });
-          standupBody.reminders.schedules = schedules;
+          reminders.schedules = schedules;
         }
       }
 
-      const standUp = await StandUp.create(standupBody);
+      const standUp = await StandUp.create(body);
       return res.json({ success: true, standup: standUp });
     } catch (e) {
       return res.status(400).json({
@@ -99,171 +93,70 @@ class StandUpController {
     }
 
     try {
-      let standUp = await StandUp.findById(req.params.id);
-      if (!standUp) {
-        throw new Error(`StandUp of id '${req.params.id}' not found!`);
-      }
+      let { standUp } = req;
+      const { body } = req;
 
-      const standupBody = req.body.standup;
-
-      if (standupBody.reminders) {
-        let standUpSchedules = standUp.reminders.schedules;
-        const newSchedules = [];
-        const updateSchedules = [];
-
-        if (!standupBody.reminders.days) {
-          standupBody.reminders.days = standUp.reminders.days;
-        }
+      if (body.reminders) {
+        const standUpSchedules = standUp.reminders.schedules;
 
         // checks of schedule(s) option
-        if (standupBody.reminders.schedules) {
-          standupBody.reminders.schedules.forEach((schedule) => {
-            if (String(Object.keys(schedule)) === String(['time'])) {
-              newSchedules.push(schedule);
-              if (newSchedules.length + standUpSchedules.length > 3) {
-                throw new Error(
-                  `There is currently ${standUpSchedules.length} existing reminders and only up to 3 can be scheduled in a standup!`,
-                );
+        if (body.reminders.schedules && body.reminders.schedules.length !== 0) {
+          const users = await User.find({ standups: standUp._id })
+            .select('_id')
+            .lean();
+          const userIds = users.map((user) => user._id);
+
+          const unifiedSchedules = body.reminders.schedules.reduce((acc, schedule) => {
+            const existScheduleIdx = standUpSchedules.findIndex(
+              (obj) => obj.time.hour === schedule.time.hour
+                && obj.time.min === schedule.time.min,
+            );
+
+            // update/retain reminder(s)
+            if (existScheduleIdx !== -1) {
+              const existSchedule = standUpSchedules.splice(existScheduleIdx, 1)[0];
+              const checkNotification = StandUpHelpers.genDate(
+                schedule.time,
+                body.reminders.timeZone,
+              ).toISO();
+
+              existSchedule.notification.users = userIds;
+
+              if (
+                StandUpHelpers.checkTimeEqual(
+                  existSchedule.notification.time.toISOString(),
+                  checkNotification,
+                )
+              ) {
+                acc.push(existSchedule);
+                return acc;
               }
-            } else if (
-              String(Object.keys(schedule)) === String(['_id', 'time'])
-            ) {
-              updateSchedules.push(schedule);
-            } else {
-              throw new Error(`${Object.keys(schedule)} is not valid!`);
+
+              existSchedule.notification.time = checkNotification;
+              acc.push(existSchedule);
+              return acc;
             }
-          });
 
-          if (updateSchedules.length !== 0) {
-            const scheduleIds = updateSchedules.map((schedule) => schedule._id);
-            const undefinedSchedules = StandUpHelpers.remindersArrDiff(
-              standUpSchedules,
-              scheduleIds,
-            );
-
-            if (undefinedSchedules.length !== 0) {
-              throw new Error(
-                `Error in updating reminders. Reminder schedules for id(s) '${undefinedSchedules}' cannot be found.`,
-              );
-            }
-          }
-        } else {
-          standupBody.reminders.schedules = standUpSchedules;
-        }
-
-        // update/create reminder(s)
-        if (
-          standupBody.reminders.staticTime !== undefined
-          && standupBody.reminders.staticTime !== standUp.reminders.staticTime
-        ) {
-          if (updateSchedules.length !== 0) {
-            standUpSchedules = updateSchedules.concat(
-              StandUpHelpers.remindersArrDiff(
-                updateSchedules,
-                standUpSchedules,
-              ),
-            );
-          }
-          if (newSchedules.length !== 0) {
-            standUpSchedules = standUpSchedules.concat(newSchedules);
-          }
-
-          const schedules = standUpSchedules.map(async (schedule) => {
+            // create reminder(s)
             const result = this.createStandupReminders(
               schedule,
-              standupBody.reminders.staticTime,
+              body.reminders.timeZone,
             );
-            const users = await User.find({ standups: standUp._id })
-              .select('configs.timeZone')
-              .lean();
 
-            if (users.length > 0) {
-              return this.updateStandupReminders(
-                result,
-                users,
-                standupBody.reminders.staticTime,
-              );
-            }
-            return result;
-          });
-          standupBody.reminders.schedules = await Promise.all(schedules).catch(
-            (e) => res.status(404).json({
-              message: 'There is an error enabling staticTime!',
-              errors: e.message,
-            }),
-          );
-        } else {
-          const users = await User.find({ standups: standUp._id })
-            .select('configs.timeZone')
-            .lean();
-          standupBody.reminders.schedules = standUpSchedules;
-          standupBody.reminders.staticTime = standUp.reminders.staticTime;
+            result.notification.users = userIds;
+            acc.push(result);
+            return acc;
+          }, []);
 
-          if (updateSchedules.length !== 0) {
-            // eslint-disable-next-line no-restricted-syntax
-            for (const schedule of updateSchedules) {
-              const same = standUpSchedules.some((existSchedules) => {
-                if (
-                  existSchedules.time.hour === schedule.time.hour
-                  && existSchedules.time.min === schedule.time.min
-                ) {
-                  return true;
-                }
-                return false;
-              });
-
-              // skip update if same
-              if (!same) {
-                const scheduleIdx = standUpSchedules.findIndex(
-                  (obj) => String(obj._id) === schedule._id,
-                );
-
-                standUpSchedules[scheduleIdx].time = schedule.time;
-                standUpSchedules[scheduleIdx] = this.updateStandupReminders(
-                  standUpSchedules[scheduleIdx],
-                  users,
-                  standUp.reminders.staticTime,
-                );
-              }
-            }
-            standupBody.reminders.schedules = standUpSchedules;
-          }
-          if (newSchedules.length !== 0) {
-            const schedules = newSchedules.map(async (schedule) => {
-              const result = this.createStandupReminders(
-                schedule,
-                standUp.reminders.staticTime,
-              );
-              const users = await User.find({
-                standups: standUp._id,
-              })
-                .select('configs.timeZone')
-                .lean();
-
-              if (users.length > 0) {
-                return this.updateStandupReminders(
-                  result,
-                  users,
-                  standUp.reminders.staticTime,
-                  true,
-                );
-              }
-              return result;
-            });
-            standupBody.reminders.schedules = standupBody.reminders.schedules.concat(
-              await Promise.all(schedules),
-            );
-          }
+          body.reminders.schedules = unifiedSchedules;
         }
-      } else {
-        standupBody.reminders = standUp.reminders;
       }
 
       standUp = await StandUp.findOneAndUpdate(
         { _id: standUp._id },
-        standupBody,
+        body,
         { new: true, runValidators: true },
-      );
+      ).lean();
       return res.json({ success: true, standup: standUp });
     } catch (e) {
       return res
@@ -332,7 +225,7 @@ class StandUpController {
         await StandUpHelpers.updateStandUpRemindersByUser(
           user,
           [standUp._id],
-          true,
+          false,
           true,
         );
       }
@@ -405,40 +298,15 @@ class StandUpController {
     }
   }
 
-  createStandupReminders(schedule, staticTime) {
+  createStandupReminders(schedule, timeZone) {
     const scheduleConfig = { time: schedule.time };
 
-    if (staticTime === false) {
-      scheduleConfig.list = [
-        {
-          user_id: [],
-          notification_time: StandUpHelpers.genDate(schedule.time, 'utc'),
-        },
-      ];
-    }
+    scheduleConfig.notification = {
+      users: [],
+      time: StandUpHelpers.genDate(schedule.time, timeZone),
+    };
 
     return scheduleConfig;
-  }
-
-  updateStandupReminders(schedule, users, staticTime) {
-    if (staticTime) {
-      const listOfSchedules = users.map((user) => ({
-        user_id: user._id,
-        notification_time: StandUpHelpers.genDate(
-          schedule.time,
-          user.configs.timeZone,
-        ),
-      }));
-
-      schedule.list = listOfSchedules;
-      return schedule;
-    }
-    const userIds = users.map((user) => user._id);
-    const notificationTime = StandUpHelpers.genDate(schedule.time, 'utc');
-
-    schedule.list[0].user_id = userIds;
-    schedule.list[0].notification_time = notificationTime;
-    return schedule;
   }
 }
 
