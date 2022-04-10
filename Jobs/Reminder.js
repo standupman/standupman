@@ -88,7 +88,7 @@ const remindersJob = new CronJob('*/3 * * * *', async () => {
     .select('name reminders')
     .lean();
 
-  console.log('Number of standup with reminders to send: ', standups.length);
+  // console.log('Number of standup with reminders to send: ', standups.length);
 
   if (standups.length !== 0) {
     await Reminders.processReminders(standups, date);

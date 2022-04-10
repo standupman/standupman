@@ -36,12 +36,16 @@ boltApp.command('/standup-notes', async ({
     if (users.length === 0) {
       client.chat.postMessage({
         channel: body.user_id,
-        text: `Hey <@${body.user_id}>Thank you for your interest in StandupMan!\n You will need an account with us to use StandupMan's service. Visit us at standupman.xyz to sign up :hugging_face:`,
+        text: `Hey <@${body.user_id}>, thank you for your interest in `
+              + 'StandupMan!\n You will need an account with us to use '
+              + 'StandupMan\'s service. Visit us at standupman.xyz to sign '
+              + 'up :hugging_face:',
       });
     } else if (users[0].standups.length === 0) {
       client.chat.postMessage({
         channel: body.user_id,
-        text: `<@${body.user_id}> you are currently not subscribed to any standups. Visit standupman.xyz to get started :bulb:`,
+        text: `<@${body.user_id}> you are currently not subscribed to any `
+              + 'standups. Visit standupman.xyz to get started :bulb:',
       });
     } else {
       const { standups } = users[0];
@@ -104,7 +108,7 @@ boltApp.action('standup_list', async ({
 
     if (
       standupQns == null
-      || standupQns.responseTime.getDate() !== DateTime.utc().day
+      || standupQns.responseTime.getUTCDate() !== DateTime.utc().day
     ) {
       Object.keys(standup.questions).forEach((question) => {
         blockUpdate.blocks.push({
@@ -127,7 +131,8 @@ boltApp.action('standup_list', async ({
         type: 'section',
         text: {
           type: 'plain_text',
-          text: `You have already posted for today's ${body.actions[0].selected_option.text.text} standup!`,
+          text: 'You have already posted for today\'s '
+                + `${body.actions[0].selected_option.text.text} standup!`,
           emoji: true,
         },
       });
@@ -159,25 +164,21 @@ boltApp.view('modal_post', async ({
     standup_id:
       payload.standup_select.standup_list.selected_option.value,
     user_id: user[0]._id,
-    responseTime: new Date(),
+    responseTime: DateTime.utc(),
     answers: {},
   };
 
   delete payload.standup_select;
   const keys = Object.keys(payload);
   keys.forEach((res, idx) => {
-    let index = idx;
-    formatResponse.answers[`answer_${index += 1}`] = {
+    formatResponse.answers[`answer_${idx + 1}`] = {
       question_id: res,
       response: payload[res][`a_id_${res}`].value,
     };
   });
 
-  console.log('This is formatResponse: ', formatResponse);
-
   let msg = '';
   const results = await StandUpUpdate.create(formatResponse);
-  console.log('This is results: ', results);
   if (results) {
     msg = 'Your submission was successful :tada:';
   } else {
