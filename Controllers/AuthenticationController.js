@@ -29,7 +29,10 @@ export default {
         // eslint-disable-next-line no-console
         console.log('Error Happened In auth /token Route');
       } else {
-        const token = genToken(user);
+        const payload = {
+          sub: user.id,
+        };
+        const token = genToken(payload);
         res.status(200).json({ token });
       }
     });
