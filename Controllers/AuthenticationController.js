@@ -21,16 +21,23 @@ function genToken(user) {
 export default {
   login: (req, res) => {
     User.findOne({ username: req.body.username }, (err, user) => {
+      if (!user) {
+        return res.status(403).json({
+          message: 'Invalid credentials',
+        });
+      }
       if (!user.validatePassword(req.body.password)) {
-        res.status(403).json({ error: 'Incorrect password' });
+        return res.status(403).json({ error: 'Incorrect password' });
       }
       if (err) {
         // eslint-disable-next-line no-console
         console.log('Error Happened In auth /token Route');
-      } else {
-        const token = genToken(user);
-        res.status(200).json({ token });
+        return res.status(500).json({
+          message: 'Internal Server Error',
+        });
       }
+      const token = genToken(user);
+      return res.status(200).json({ token });
     });
   },
   logout: (req, res) => {
