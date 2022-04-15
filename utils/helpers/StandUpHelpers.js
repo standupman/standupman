@@ -3,8 +3,6 @@
 /* eslint-disable func-names */
 import { DateTime } from 'luxon';
 
-import StandUp from '../../Models/StandUp';
-
 const StandUpHelpers = {
   /**
    * generates a date
@@ -81,42 +79,6 @@ const StandUpHelpers = {
       return array.sort((a, b) => a.time.hour - b.time.hour || a.time.min - b.time.min);
     }
     return array.sort();
-  },
-
-  /**
-   * update standup reminders based on user action
-   * @param {Object} user - User object (document)
-   * @param {Array} standups - The array of standup IDs user is associated with
-   * @param {Boolean} remove - Remove user from list of scheduled reminders
-   * @param {Boolean} generate - Add user to list of scheduled reminders
-   * @returns {} - No return
-   */
-  updateStandUpRemindersByUser: function (
-    user,
-    standups,
-    remove = false,
-    generate = false,
-  ) {
-    standups.forEach(async (standupId) => {
-      const standUp = await StandUp.findById(standupId).select('reminders');
-      if (standUp.reminders.schedules.length !== 0) {
-        if (remove) {
-          await StandUp.findByIdAndUpdate(standupId, {
-            $pull: {
-              'reminders.schedules.$[].notification.users': user._id,
-            },
-          }).exec();
-        }
-
-        if (generate) {
-          await StandUp.findByIdAndUpdate(standupId, {
-            $push: {
-              'reminders.schedules.$[].notification.users': user._id,
-            },
-          }).exec();
-        }
-      }
-    });
   },
 };
 

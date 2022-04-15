@@ -101,15 +101,15 @@ boltApp.action('standup_list', async ({
     const blockUpdate = views.modal_view(body.user.username);
     blockUpdate.blocks[2].accessory.options = body.view.blocks[2].accessory.options;
 
-    blockUpdate.submit = {
-      type: 'plain_text',
-      text: 'Submit',
-    };
-
     if (
       standupQns == null
       || standupQns.responseTime.getUTCDate() !== DateTime.utc().day
     ) {
+      blockUpdate.submit = {
+        type: 'plain_text',
+        text: 'Submit',
+      };
+
       Object.keys(standup.questions).forEach((question) => {
         blockUpdate.blocks.push({
           block_id: question,

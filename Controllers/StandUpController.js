@@ -101,11 +101,6 @@ class StandUpController {
 
         // checks of schedule(s) option
         if (body.reminders.schedules && body.reminders.schedules.length !== 0) {
-          const users = await User.find({ standups: standUp._id })
-            .select('_id')
-            .lean();
-          const userIds = users.map((user) => user._id);
-
           const unifiedSchedules = body.reminders.schedules.reduce((acc, schedule) => {
             const existScheduleIdx = standUpSchedules.findIndex(
               (obj) => obj.time.hour === schedule.time.hour
@@ -120,11 +115,9 @@ class StandUpController {
                 body.reminders.timeZone,
               ).toISO();
 
-              existSchedule.notification.users = userIds;
-
               if (
                 StandUpHelpers.checkTimeEqual(
-                  existSchedule.notification.time.toISOString(),
+                  existSchedule.notification_time.toISOString(),
                   checkNotification,
                 )
               ) {
@@ -132,7 +125,7 @@ class StandUpController {
                 return acc;
               }
 
-              existSchedule.notification.time = checkNotification;
+              existSchedule.notification_time = checkNotification;
               acc.push(existSchedule);
               return acc;
             }
@@ -143,7 +136,6 @@ class StandUpController {
               body.reminders.timeZone,
             );
 
-            result.notification.users = userIds;
             acc.push(result);
             return acc;
           }, []);
@@ -221,15 +213,6 @@ class StandUpController {
     }
 
     try {
-      if (standUp.reminders.schedules.length !== 0) {
-        await StandUpHelpers.updateStandUpRemindersByUser(
-          user,
-          [standUp._id],
-          false,
-          true,
-        );
-      }
-
       user.standups.push(standUp._id);
       user = await User.findOneAndUpdate(
         { username: user.username },
@@ -275,11 +258,6 @@ class StandUpController {
     }
 
     try {
-      await StandUpHelpers.updateStandUpRemindersByUser(
-        user,
-        [standUp._id],
-        true,
-      );
       user.standups = user.standups
         .slice(0, scrumIndex)
         .concat(user.standups.slice(scrumIndex + 1));
@@ -299,11 +277,9 @@ class StandUpController {
   }
 
   createStandupReminders(schedule, timeZone) {
-    const scheduleConfig = { time: schedule.time };
-
-    scheduleConfig.notification = {
-      users: [],
-      time: StandUpHelpers.genDate(schedule.time, timeZone),
+    const scheduleConfig = {
+      time: schedule.time,
+      notification_time: StandUpHelpers.genDate(schedule.time, timeZone),
     };
 
     return scheduleConfig;

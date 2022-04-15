@@ -47,10 +47,7 @@ const StandUpSchema = new Schema({
     schedules: [
       {
         time: { hour: Number, min: Number },
-        notification: {
-          users: Array,
-          time: Date,
-        },
+        notification_time: Date,
       },
     ],
   },
@@ -58,7 +55,7 @@ const StandUpSchema = new Schema({
 });
 
 StandUpSchema.index(
-  { 'reminders.schedules.notification.time': -1 },
+  { 'reminders.schedules.notification_time': -1 },
   { name: 'schedule_NotificationIdx' },
 );
 const StandUp = mongoose.model('StandUp', StandUpSchema);
