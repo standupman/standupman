@@ -47,10 +47,10 @@ const UserSchema = new Schema({
     type: Array,
   },
   configs: {
-    medium_mode: {
+    notification_destination: {
       type: String,
       default: 'email',
-      required: [true, 'medium_mode is not present.'],
+      required: [true, 'notification_destination is not present.'],
     },
   },
 

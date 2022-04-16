@@ -2,8 +2,8 @@
 A system that sends out reminders to users based on the standup they have subscribed to.
 
 ## Description
-As users create the standups, they can also schedule reminders to remind their subscribers to post their standup notes. In a single standup, only up to 3 reminders can be scheduled.
-The subscribers will receive these reminders according to their preferred mode, e.g., slack or email.
+As users create the standups, they can also schedule reminders to remind their subscribers to post their standup notes. In a single standup, only up to __3 reminders__ can be scheduled. Additionally, users can specify the __days__ `(Mon - 1, Tue - 2, Wed - 3, Thur - 4, Fri - 5, Sat - 6, Sun - 7)` they want to receive the reminders.
+The subscribers will receive these reminders according to their preferred notification destination, e.g., slack or email.
 
 ## How it works
 > Example of a stored reminders data in a standup
@@ -38,7 +38,7 @@ The subscribers will receive these reminders according to their preferred mode, 
     - It will go through each standup and query all the subscribers (users) associated with that standup to send the reminder.
     - It will loop through all the reminders in standup to see which reminder notification_time is lesser than the current UTC DateTime.
     - Afterwhich, it will check if today is a day to send the reminder. In the example above, the `days` field contains `1`, `2`, `3`, and `5`. It means that sending reminders out is only considered on __Monday, Tuesday, Wednesday, and Friday__.
-    - If all checks pass, it will send out reminders for each subscriber. Each subscriber will receive the reminder through the medium mode `(slack, email, etc.)` they prefer to receive.
+    - If all checks pass, it will send out reminders for each subscriber. Each subscriber will receive the reminder through the notification destination `(slack, email, etc.)` they prefer to receive.
     - After sending all the reminders to all subscribers, it will update the notification_time field by adding a day.
 
 <hr>
@@ -99,3 +99,44 @@ The subscribers will receive these reminders according to their preferred mode, 
     > - However, if the newly generated time is the same as the existing one, it will just retain the existing reminder.
     - Otherwise, if false, it will use the new reminder hour and minute to generate a reminder time.
 
+```JSON
+[
+    {
+        "...": ...,
+        
+        "reminders": {
+            "days": [1, 2, 3, 4, 5],
+            "schedules": [
+                {
+                    "_id": "6259e8f4bec364633724d887",
+                    "time": { "hour": 9, "min": 45 },
+                    "notification_time": "2022-04-17T01:45:00.000Z"
+                },
+                {
+                    "_id": "6259e8f4bec364633724d888",
+                    "time": { "hour": 10, "min": 45 },
+                    "notification_time": "2022-04-17T02:45:00.000Z"
+                }
+            ]
+        }
+    },
+    {
+        "...": ...,
+        
+        "reminders": {
+            "days": [1, 2, 3, 4, 5],
+            "schedules": [
+                {
+                    "_id": "6259ea17ca14076352834f47",
+                    "time": { "hour": 11, "min": 45 },
+                    "notification_time": "2022-04-16T16:45:00.000Z"
+                },
+                {
+                    "_id": "6259ea17ca14076352834f48",
+                    "time": { "hour": 12, "min": 45 },
+                    "notification_time": "2022-04-16T17:45:00.000Z"
+                }
+            ]
+        }
+    },
+]
