@@ -9,7 +9,7 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import cors from 'cors';
 import routes from './routes/web';
 import swaggerJSDocOptions from './swaggerJSDocOptions';
-import { expressReceiver } from './mode/slack/app';
+import { expressReceiver } from './lib/slack/app';
 import remindersJob from './Jobs/Reminder';
 
 dotenv.config({ path: path.resolve('.', '.env') });

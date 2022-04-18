@@ -99,44 +99,5 @@ The subscribers will receive these reminders according to their preferred notifi
     > - However, if the newly generated time is the same as the existing one, it will just retain the existing reminder.
     - Otherwise, if false, it will use the new reminder hour and minute to generate a reminder time.
 
-```JSON
-[
-    {
-        "...": ...,
-        
-        "reminders": {
-            "days": [1, 2, 3, 4, 5],
-            "schedules": [
-                {
-                    "_id": "6259e8f4bec364633724d887",
-                    "time": { "hour": 9, "min": 45 },
-                    "notification_time": "2022-04-17T01:45:00.000Z"
-                },
-                {
-                    "_id": "6259e8f4bec364633724d888",
-                    "time": { "hour": 10, "min": 45 },
-                    "notification_time": "2022-04-17T02:45:00.000Z"
-                }
-            ]
-        }
-    },
-    {
-        "...": ...,
-        
-        "reminders": {
-            "days": [1, 2, 3, 4, 5],
-            "schedules": [
-                {
-                    "_id": "6259ea17ca14076352834f47",
-                    "time": { "hour": 11, "min": 45 },
-                    "notification_time": "2022-04-16T16:45:00.000Z"
-                },
-                {
-                    "_id": "6259ea17ca14076352834f48",
-                    "time": { "hour": 12, "min": 45 },
-                    "notification_time": "2022-04-16T17:45:00.000Z"
-                }
-            ]
-        }
-    },
-]
+## Development
+If a new `notification_destination` type is added please add it under [here](../lib/) and add the check [here](../Jobs/Reminder.js#L31).

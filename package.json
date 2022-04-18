@@ -17,7 +17,7 @@
   "author": "Fon E. Noel NFEBE <nomad@stacknerds.com>",
   "license": "ISC",
   "dependencies": {
-    "@slack/bolt": "^3.9.0",
+    "@slack/bolt": "^3.11.0",
     "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
     "cron": "^1.8.2",

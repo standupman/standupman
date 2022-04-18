@@ -6,7 +6,7 @@ import { DateTime } from 'luxon';
 
 import User from '../Models/User';
 import StandUp from '../Models/StandUp';
-import { boltApp } from '../mode/slack/app';
+import { boltApp } from '../lib/slack/app';
 
 const Reminders = {
   publishSlackMessage: async function (email, standupName) {
@@ -29,7 +29,7 @@ const Reminders = {
   },
 
   sendReminders: async function (user, standup) {
-    if (user.configs.medium_mode === 'slack') {
+    if (user.configs.notification_destination === 'slack') {
       this.publishSlackMessage(user.email, standup.name);
     }
   },
@@ -43,7 +43,7 @@ const Reminders = {
           if (schedule.notification_time < date) {
             if (standup.reminders.days.includes(date.weekday)) {
               const users = await User.find({ standups: standup._id })
-                .select('email configs.medium_mode')
+                .select('email configs.notification_destination')
                 .lean();
 
               await Promise.all(

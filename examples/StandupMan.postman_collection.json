@@ -45,7 +45,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"user\": {\n        \"username\": \"standupman\",\n        \"email\": \"standupman@gmail.com\",\n        \"full_name\": \"standupman\",\n        \"password\": \"standupman\",\n        \"configs\": {\n            \"medium_mode\": \"slack\"\n        }\n    }\n}",
+					"raw": "{\n    \"user\": {\n        \"username\": \"standupman\",\n        \"email\": \"standupman@gmail.com\",\n        \"full_name\": \"standupman\",\n        \"password\": \"standupman\",\n        \"configs\": {\n            \"notification_destination\": \"slack\"\n        }\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -72,13 +72,20 @@
 			"name": "User login",
 			"request": {
 				"auth": {
-					"type": "noauth"
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{auth_JWT_Token}}",
+							"type": "string"
+						}
+					]
 				},
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"username\": \"huilun\",\n    \"password\": \"huilun\"\n}",
+					"raw": "{\n    \"username\": \"standupman\",\n    \"password\": \"standupman\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -147,7 +154,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"user\": {\n        \"configs\": {\n            \"medium_mode\": \"slack\"\n        }\n    }\n}",
+					"raw": "{}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -287,7 +294,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\": \"Daily Standup Team 3\",\n    \"completionTime\": \"2022-02-19\",\n    \"questions\": {\n        \"question_1\": {\n            \"title\": \"What did you do today\",\n            \"response_type\": \"String\"\n        },\n        \"question_2\": {\n            \"title\": \"How many hours did you work today\",\n            \"response_type\": \"String\"\n        },\n        \"question_3\": {\n            \"title\": \"What will you work on till the next standup\",\n            \"response_type\": \"String\"\n        },\n        \"question_4\": {\n            \"title\": \"Any suggestion for improvements\",\n            \"response_type\": \"String\"\n        }\n    },\n    \"reminders\": {\n        \"days\": [1, 2, 3, 6],\n        \"timeZone\": \"Asia/Singapore\",\n        \"schedules\": [\n            { \"time\": { \"hour\": 4, \"min\": 45 }},\n            { \"time\": { \"hour\": 5, \"min\": 0 }}\n        ]\n    }\n}",
+					"raw": "{\n    \"name\": \"Daily Standup Team 3\",\n    \"completionTime\": \"2022-02-19\",\n    \"questions\": {\n        \"question_1\": {\n            \"title\": \"What did you do today\",\n            \"response_type\": \"String\"\n        },\n        \"question_2\": {\n            \"title\": \"How many hours did you work today\",\n            \"response_type\": \"String\"\n        },\n        \"question_3\": {\n            \"title\": \"What will you work on till the next standup\",\n            \"response_type\": \"String\"\n        },\n        \"question_4\": {\n            \"title\": \"Any suggestion for improvements\",\n            \"response_type\": \"String\"\n        }\n    },\n    \"reminders\": {\n        \"days\": [1, 2, 3, 4, 5, 6],\n        \"timeZone\": \"Asia/Singapore\",\n        \"schedules\": [\n            { \"time\": { \"hour\": 4, \"min\": 45 }},\n            { \"time\": { \"hour\": 5, \"min\": 0 }}\n        ]\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -367,7 +374,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\": \"Daily Standup Team 3\",\n    \"completionTime\": \"2022-02-19\",\n    \"questions\": {\n        \"question_1\": {\n            \"title\": \"What is your favourite bottle?\",\n            \"response_type\": \"String\"\n        },\n        \"question_2\": {\n            \"title\": \"How many hours did you work today\",\n            \"response_type\": \"String\"\n        },\n        \"question_3\": {\n            \"title\": \"What will you work on till the next standup\",\n            \"response_type\": \"String\"\n        }\n    },\n    \"reminders\": {\n        \"timeZone\": \"Asia/Singapore\",\n        \"days\": [1, 2, 3, 5],\n        \"schedules\": [\n            {\"time\": {\"hour\": 6, \"min\": 40}},\n            {\"time\": {\"hour\": 5, \"min\": 40}},\n            {\"time\": {\"hour\": 7, \"min\": 40}}\n        ]\n    }\n}",
+					"raw": "{\n    \"name\": \"Daily Standup Team 3\",\n    \"completionTime\": \"2022-02-19\",\n    \"questions\": {\n        \"question_1\": {\n            \"title\": \"What is your favourite bottle?\",\n            \"response_type\": \"String\"\n        },\n        \"question_2\": {\n            \"title\": \"How many hours did you work today\",\n            \"response_type\": \"String\"\n        },\n        \"question_3\": {\n            \"title\": \"What will you work on till the next standup\",\n            \"response_type\": \"String\"\n        }\n    },\n    \"reminders\": {\n        \"timeZone\": \"America/Chicago\",\n        \"days\": [1, 2, 3, 4, 5],\n        \"schedules\": [\n            {\"time\": {\"hour\": 9, \"min\": 45}},\n            {\"time\": {\"hour\": 10, \"min\": 45}}\n        ]\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -611,6 +618,16 @@
 				"description": "This request gets the list of standup responses from the collection."
 			},
 			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "host",
+			"value": "localhost"
+		},
+		{
+			"key": "auth_JWT_Token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdGFuZHVwbWFuX2FwaSIsInN1YiI6IjYyNGRmYmYzYjhmMDY2MmRjN2I0MWVmNyIsImlhdCI6MTY0OTkyNTM5NjA2NCwiZXhwIjoxNjUwMDExNzk2MDY0fQ.zkuGm_cCur5KdRfkcrS6nUbEPScbZHkAbkhWgN9R7Jk"
 		}
 	]
 }
