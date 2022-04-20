@@ -45,7 +45,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"user\": {\n        \"username\": \"standupman\",\n        \"email\": \"standupman@gmail.com\",\n        \"full_name\": \"standupman\",\n        \"password\": \"standupman\",\n        \"configs\": {\n            \"notification_destination\": \"slack\"\n        }\n    }\n}",
+					"raw": "{\n    \"user\": {\n        \"username\": \"standupman\",\n        \"email\": \"standupman@gmail.com\",\n        \"full_name\": \"standupman\",\n        \"password\": \"standupman\",\n        \"configs\": {\n            \"notification\": {\n                \"destination\": \"slack\"\n            }\n        }\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"

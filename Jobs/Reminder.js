@@ -6,19 +6,28 @@ import { DateTime } from 'luxon';
 
 import User from '../Models/User';
 import StandUp from '../Models/StandUp';
+import SlackInstallation from '../Models/SlackInstallation';
 import { boltApp } from '../lib/slack/app';
 
 const Reminders = {
-  publishSlackMessage: async function (email, standupName) {
+  publishSlackMessage: async function (email, standupName, slackTeamId) {
     try {
+      const SLACK_BOT_TOKEN = (
+        await SlackInstallation.findById(slackTeamId)
+          .select('installation.bot.token')
+          .lean()
+      ).installation.bot.token;
       const slackUser = await boltApp.client.users.lookupByEmail({
+        token: SLACK_BOT_TOKEN,
         email: email,
       });
       const openChannel = await boltApp.client.conversations.open({
+        token: SLACK_BOT_TOKEN,
         users: slackUser.user.id,
       });
 
       boltApp.client.chat.postMessage({
+        token: SLACK_BOT_TOKEN,
         channel: openChannel.channel.id,
         text: `Hey <@${slackUser.user.name}> :wave:\nDo remember to submit your `
               + `standup for ${standupName} through invoking \`/standup-notes post\``,
@@ -29,8 +38,15 @@ const Reminders = {
   },
 
   sendReminders: async function (user, standup) {
-    if (user.configs.notification_destination === 'slack') {
-      this.publishSlackMessage(user.email, standup.name);
+    if (
+      user.configs.notification.destination === 'slack'
+      && user.configs.notification.slack_id !== undefined
+    ) {
+      this.publishSlackMessage(
+        user.email,
+        standup.name,
+        user.configs.notification.slack_id,
+      );
     }
   },
 
@@ -43,7 +59,7 @@ const Reminders = {
           if (schedule.notification_time < date) {
             if (standup.reminders.days.includes(date.weekday)) {
               const users = await User.find({ standups: standup._id })
-                .select('email configs.notification_destination')
+                .select('email configs.notification')
                 .lean();
 
               await Promise.all(

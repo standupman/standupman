@@ -1,5 +1,8 @@
+/* eslint-disable func-names */
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
+
+import SlackInstallation from './SlackInstallation';
 
 const { Schema } = mongoose;
 
@@ -47,16 +50,32 @@ const UserSchema = new Schema({
     type: Array,
   },
   configs: {
-    notification_destination: {
-      type: String,
-      default: 'email',
-      required: [true, 'notification_destination is not present.'],
+    notification: {
+      destination: {
+        type: String,
+        default: 'email',
+        required: [true, 'destination is not present.'],
+      },
+      slack_id: {
+        type: String,
+        validate: {
+          async validator(id) {
+            const teamId = await SlackInstallation.findById(id);
+            if (teamId === null) {
+              throw new Error(
+                'StandupMan\'s slack app is not installed in Slack workspace '
+                + `with team_id '${id}'. Please contact your administrator `
+                + 'to add StandupMan\'s slack app to the workspace.',
+              );
+            }
+          },
+          message: (props) => props.reason.message,
+        },
+      },
     },
   },
-
 });
 
-// eslint-disable-next-line func-names
 UserSchema.methods.validatePassword = function (password) {
   return bcrypt.compareSync(password, this.password);
 };
