@@ -10,13 +10,20 @@ import SlackInstallation from '../Models/SlackInstallation';
 import { boltApp } from '../lib/slack/app';
 
 const Reminders = {
-  publishSlackMessage: async function (email, standupName, slackTeamId) {
+  publishSlackMessage: async function (email, standupName, slackId) {
     try {
-      const SLACK_BOT_TOKEN = (
-        await SlackInstallation.findById(slackTeamId)
-          .select('installation.bot.token')
-          .lean()
-      ).installation.bot.token;
+      let SLACK_BOT_TOKEN = await SlackInstallation.findById(slackId)
+        .select('installation.bot.token')
+        .lean();
+
+      if (slackId.substring(0, 1) === 'T') {
+        // single workspace
+        SLACK_BOT_TOKEN = SLACK_BOT_TOKEN.installation.bot.token;
+      } else {
+        // org-level workspace
+        SLACK_BOT_TOKEN = SLACK_BOT_TOKEN.installation.access_token;
+      }
+
       const slackUser = await boltApp.client.users.lookupByEmail({
         token: SLACK_BOT_TOKEN,
         email: email,
@@ -40,7 +47,7 @@ const Reminders = {
   sendReminders: async function (user, standup) {
     if (
       user.configs.notification.destination === 'slack'
-      && user.configs.notification.slack_id !== undefined
+      && Boolean(user.configs.notification.slack_id) !== false
     ) {
       this.publishSlackMessage(
         user.email,

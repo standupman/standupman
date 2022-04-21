@@ -10,7 +10,9 @@ display_information:
 
     Use StandupMan within slack to:\r
 
-    • Post standup notes to StandupMan"
+    • 📝 Post standup notes to StandupMan\r
+
+    • ⏱ Receive reminders set to post the standup notes"
 features:
   app_home:
     home_tab_enabled: true
