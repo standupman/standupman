@@ -1,5 +1,4 @@
-# <a href="https://standupman.xyz"><picture><img src="logo.svg"></picture></a>
-
+# [![StandUpManLogo](./logo.svg)](https://standupman.xyz)
 
 **StandUpMan** makes communication easier for teams by allowing team members asynchronously share updates with the team using their medium of choice. *StanUpMan* ruthlessly puts at end to **meeting hell** and communication chaos at work thereby making it seamless for everyone to stay updated, improve transparency, work in sync, stay on track, and hit targets in less time.
 
