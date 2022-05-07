@@ -36,10 +36,7 @@ export default {
           message: 'Internal Server Error',
         });
       }
-      const payload = {
-        sub: user.id,
-      };
-      const token = genToken(payload);
+      const token = genToken(user);
       return res.status(200).json({ token });
     });
   },
