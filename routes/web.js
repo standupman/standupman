@@ -32,12 +32,85 @@ router.get('/', publicController.welcome);
  *     responses:
  *       200:
  *         description: Returns list of standups
- *         schema:
- *           type: object
- *           standups:
- *             $ref: '#/definitions/Standup'
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Standup'
  */
 router.get('/standups', authMiddleware, standUpController.standUpList);
+
+/**
+ * @openapi
+ * /standups/new:
+ *   post:
+ *     description: Create new standup
+ *     tags: [Standup]
+ *     requestBody:
+ *       $ref: '#/components/requestBodies/CreateStandupReq'
+ *     responses:
+ *       200:
+ *         description: Returns newly created standup
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Standup'
+ *             examples:
+ *                 basic:
+ *                   $ref: '#/components/examples/basic_standup_res'
+ *                 standup_with_reminders:
+ *                   $ref: '#/components/examples/standup_with_reminders_res'
+ */
+router.post('/standups/new', [
+  checkSchema(StandUpValidator.post),
+  authMiddleware,
+], standUpController.createNewStandUp.bind(standUpController));
+
+/**
+ * @openapi
+ * /standups/{id}:
+ *   delete:
+ *     tags: [Standup]
+ *     description: Deletes a standup
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: Returns the successful deleted standup
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Standup'
+ *   put:
+ *     tags: [Standup]
+ *     description: Updates a standup
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *     requestBody:
+ *       $ref: '#/components/requestBodies/UpdateStandupReq'
+ *     responses:
+ *       200:
+ *         description: Returns the successful updated standup
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Standup'
+ *             examples:
+ *                 basic:
+ *                   $ref: '#/components/examples/basic_standup_res'
+ *                 standup_with_reminders:
+ *                   $ref: '#/components/examples/standup_with_reminders_res'
+ */
+router.delete('/standups/:id', authMiddleware, standUpController.deleteStandUp);
+router.put('/standups/:id', [
+  checkSchema(StandUpValidator.put),
+  authMiddleware,
+], standUpController.updateStandUp.bind(standUpController));
 
 /**
  * @openapi
@@ -48,42 +121,39 @@ router.get('/standups', authMiddleware, standUpController.standUpList);
  *     responses:
  *       200:
  *         description: Returns list of standup responses
- *         schema:
- *           type: object
- *           standUpResponses:
- *             $ref: '#/definitions/StandupUpdate'
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/StandupResponse'
  */
 router.get('/standups/responses', authMiddleware, standUpController.standUpResponses);
 
 /**
  * @openapi
- * /standups/new:
+ * /standups/complete:
  *   post:
- *     description: Create new standup
+ *     description: Post standup notes
  *     tags: [Standup]
- *     parameters:
- *       $ref: '#/definitions/Standup'
+ *     requestBody:
+ *       $ref: '#/components/requestBodies/CreateStandupResponseReq'
  *     responses:
  *       200:
- *         description: Returns newly created standup
- *         schema:
- *           type: object
- *           standup:
- *             $ref: '#/definitions/Standup'
+ *         description: Return the success confirmation of standup notes posted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/StandupResponse'
+ *             examples:
+ *               basic:
+ *                 $ref: '#/components/examples/basic_standup_response_res'
  */
-router.post('/standups/new', [
-  checkSchema(StandUpValidator.post),
-  authMiddleware,
-], standUpController.createNewStandUp.bind(standUpController));
-
-/**
- * @openapi
- * /standups/delete:
- *   post:
- *     tags: [Standup]
- *     description: Not yet implemented
- */
-router.delete('/standups/:id', authMiddleware, standUpController.deleteStandUp);
+router.post(
+  '/standups/complete',
+  [body('standup_update').isObject(), authMiddleware],
+  standUpController.completeStandUp,
+);
 
 /**
  * @openapi
@@ -91,18 +161,16 @@ router.delete('/standups/:id', authMiddleware, standUpController.deleteStandUp);
  *   post:
  *     description: Subscribe to a standup
  *     tags: [Standup]
- *     parameters:
- *       name: standup_id
- *       $ref: '#/definitions/User'
+ *     requestBody:
+ *       $ref: '#/components/requestBodies/StandupSubscriptionReq'
  *     responses:
  *       200:
- *         description: Return user
- *         schema:
- *           type: object
- *           user:
- *             $ref: '#/definitions/User'
- *           success:
- *              type: string
+ *         description: Return user with updated 'standups' field
+ *         content:
+ *           application/json:
+ *             examples:
+ *               basic:
+ *                 $ref: '#/components/examples/standup_subscription_res'
  */
 router.post(
   '/standups/subscribe',
@@ -116,67 +184,21 @@ router.post(
  *   post:
  *     description: Unsubscribe to a standup
  *     tags: [Standup]
- *     parameters:
- *       name: standup_id
- *       $ref: '#/definitions/User'
+ *     requestBody:
+ *       $ref: '#/components/requestBodies/StandupSubscriptionReq'
  *     responses:
  *       200:
- *         description: Return user
- *         schema:
- *           type: object
- *           user:
- *             $ref: '#/definitions/User'
- *           success:
- *              type: string
+ *         description: Return user with updated 'standups' field
+ *         content:
+ *           application/json:
+ *             examples:
+ *               basic:
+ *                 $ref: '#/components/examples/standup_unsubscription_res'
  */
 router.post(
   '/standups/unsubscribe',
   [body('standup_id').isString(), authMiddleware],
   standUpController.unsubscribeToStandUp,
-);
-
-/**
- * @openapi
- * /standups/update:
- *   put:
- *     description: Update a standup
- *     tags: [Standup]
- *     parameters:
- *       name: standup_id
- *       $ref: '#/definitions/Standup'
- *     responses:
- *       200:
- *         description: Return standup
- *         schema:
- *           type: object
- *           StandUp:
- *             $ref: '#/definitions/Standup'
- */
-router.put('/standups/:id', [
-  checkSchema(StandUpValidator.put),
-  authMiddleware,
-], standUpController.updateStandUp.bind(standUpController));
-
-/**
- * @openapi
- * /standups/complete:
- *   post:
- *     description: Complete standup update
- *     tags: [Standup]
- *     parameters:
- *       $ref: '#/definitions/StandupUpdate'
- *     responses:
- *       200:
- *         description: Return standup update
- *         schema:
- *           type: object
- *           StandUp:
- *             $ref: '#/definitions/StandupUpdate'
- */
-router.post(
-  '/standups/complete',
-  [body('standup_update').isObject(), authMiddleware],
-  standUpController.completeStandUp,
 );
 
 /**
@@ -187,11 +209,13 @@ router.post(
  *     tags: [User]
  *     responses:
  *       200:
- *         description: Return users
- *         schema:
- *           type: object
- *           users:
- *             $ref: '#/definitions/User'
+ *         description: Return the list users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
  */
 router.get('/users', authMiddleware, userController.users);
 router.put('/users', authMiddleware, userController.updateUser);
@@ -204,14 +228,17 @@ router.put('/users', authMiddleware, userController.updateUser);
  *   post:
  *     description: Login User
  *     tags: [Authentication]
- *     parameters:
- *       $ref: '#/definitions/Login'
+ *     requestBody:
+ *       $ref: '#/components/requestBodies/LoginReq'
  *     responses:
  *       200:
- *         schema:
- *           type: object
- *           user:
- *             $ref: '#/definitions/Login'
+ *         description: Return a JWT token
+ *         content:
+ *           application/json:
+ *             examples:
+ *               basic:
+ *                 value:
+ *                   token: xxx
  */
 router.post('/login', authenticationController.login);
 
@@ -221,14 +248,20 @@ router.post('/login', authenticationController.login);
  *   post:
  *     description: Register User
  *     tags: [Authentication]
- *     parameters:
- *       $ref: '#/definitions/Register'
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/User'
  *     responses:
  *       200:
- *         schema:
- *           type: object
- *           user:
- *             $ref: '#/definitions/User'
+ *         description: Return a JWT token
+ *         content:
+ *           application/json:
+ *             examples:
+ *               basic:
+ *                 value:
+ *                   token: xxx
  */
 router.post(
   '/users/register',
