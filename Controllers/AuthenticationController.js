@@ -4,6 +4,7 @@ import { validationResult } from 'express-validator';
 import dotenv from 'dotenv';
 import path from 'path';
 import jwt from 'jsonwebtoken';
+
 import User from '../Models/User';
 
 function genToken(user) {

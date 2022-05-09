@@ -67,6 +67,10 @@ const swaggerJSDocOptions = {
                 },
               },
             },
+            reminders: {
+              type: 'object',
+              $ref: '#/components/schemas/StandupReminders',
+            },
           },
         },
         StandupQuestion: {
@@ -75,6 +79,28 @@ const swaggerJSDocOptions = {
           properties: {
             title: { type: 'string' },
             response_type: { type: 'string' },
+          },
+        },
+        StandupReminders: {
+          type: 'object',
+          required: ['days', 'schedules'],
+          properties: {
+            days: { type: 'array' },
+            schedules: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  time: {
+                    type: 'object',
+                    properties: {
+                      hour: { type: 'number' },
+                      min: { type: 'number' },
+                    },
+                  },
+                },
+              },
+            },
           },
         },
         StandupResponse: {
@@ -153,6 +179,9 @@ const swaggerJSDocOptions = {
                 basic: {
                   $ref: '#/components/examples/basic_standup_req',
                 },
+                standup_with_reminders: {
+                  $ref: '#/components/examples/standup_with_reminders_req',
+                },
               },
             },
           },
@@ -166,6 +195,9 @@ const swaggerJSDocOptions = {
               examples: {
                 basic: {
                   $ref: '#/components/examples/basic_standup_req',
+                },
+                standup_with_reminders: {
+                  $ref: '#/components/examples/standup_with_reminders_req',
                 },
               },
             },
@@ -261,6 +293,78 @@ const swaggerJSDocOptions = {
                   title: 'What will you work on till the next standup',
                   response_type: 'String',
                 },
+              },
+              reminders: {
+                days: [1, 2, 3, 4, 5],
+                schedules: [],
+              },
+            },
+          },
+        },
+        standup_with_reminders_req: {
+          value: {
+            standup: {
+              name: 'Daily Standup Team 1',
+              completionTime: '02/19/2022',
+              questions: {
+                question_1: {
+                  title: 'What did you do today',
+                  response_type: 'String',
+                },
+                question_2: {
+                  title: 'How many hours did you work today',
+                  response_type: 'String',
+                },
+                question_3: {
+                  title: 'What will you work on till the next standup',
+                  response_type: 'String',
+                },
+              },
+              reminders: {
+                days: [1, 2, 3, 4, 5, 6],
+                timeZone: 'Asia/Singapore',
+                schedules: [
+                  { time: { hour: 4, min: 45 } },
+                  { time: { hour: 5, min: 0 } },
+                ],
+              },
+            },
+          },
+        },
+        standup_with_reminders_res: {
+          value: {
+            standup: {
+              _id: '623b3979878b38d7c5bd6319',
+              name: 'Daily Standup Team 1',
+              completionTime: '02/19/2022',
+              questions: {
+                question_1: {
+                  title: 'What did you do today',
+                  response_type: 'String',
+                },
+                question_2: {
+                  title: 'How many hours did you work today',
+                  response_type: 'String',
+                },
+                question_3: {
+                  title: 'What will you work on till the next standup',
+                  response_type: 'String',
+                },
+              },
+              reminders: {
+                days: [1, 2, 3, 4, 5, 6],
+                schedules: [
+                  {
+                    _id: '6278cb8c23eed05111d2eb93',
+                    time: { hour: 4, min: 45 },
+                    notification_time: '2022-05-09T20:45:00.000Z',
+                  },
+                  {
+                    _id: '6278cb8c23eed05111d2eb94',
+                    time: { hour: 5, min: 0 },
+                    notification_time: '2022-05-09T21:00:00.000Z',
+                  },
+                ],
               },
             },
           },

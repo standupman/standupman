@@ -1,7 +1,8 @@
-import passport from 'passport';
-import { ExtractJwt, Strategy } from 'passport-jwt';
 import dotenv from 'dotenv';
+import passport from 'passport';
 import path from 'path';
+import { ExtractJwt, Strategy } from 'passport-jwt';
+
 import User from '../Models/User';
 
 dotenv.config({ path: path.resolve('.', '.env') });
@@ -13,7 +14,7 @@ const opts = {
 
 export default passport.use(
   new Strategy(opts, ((jwtPayload, done) => {
-    User.findOne({ id: jwtPayload.sub }, (err, user) => {
+    User.findOne({ _id: jwtPayload.sub }, (err, user) => {
       if (err) {
         return done(err);
       }
