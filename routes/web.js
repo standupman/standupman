@@ -1,10 +1,12 @@
 import { Router } from 'express';
-import { body } from 'express-validator';
+import { body, checkSchema } from 'express-validator';
+
 import publicController from '../Controllers/PublicController';
 import standUpController from '../Controllers/StandUpController';
 import userController from '../Controllers/UserController';
 import authenticationController from '../Controllers/AuthenticationController';
 import auth from '../Middlewares/AuthMiddleware';
+import StandUpValidator from '../utils/validators/StandUpValidator';
 
 const router = Router();
 const authMiddleware = auth.authenticate('jwt', { session: false });
@@ -57,12 +59,13 @@ router.get('/standups', authMiddleware, standUpController.standUpList);
  *             examples:
  *                 basic:
  *                   $ref: '#/components/examples/basic_standup_res'
+ *                 standup_with_reminders:
+ *                   $ref: '#/components/examples/standup_with_reminders_res'
  */
-router.post(
-  '/standups/new',
-  [body('standup').isObject(), authMiddleware],
-  standUpController.createNewStandUp,
-);
+router.post('/standups/new', [
+  checkSchema(StandUpValidator.post),
+  authMiddleware,
+], standUpController.createNewStandUp.bind(standUpController));
 
 /**
  * @openapi
@@ -100,10 +103,12 @@ router.post(
  *             examples:
  *                 basic:
  *                   $ref: '#/components/examples/basic_standup_res'
+ *                 standup_with_reminders:
+ *                   $ref: '#/components/examples/standup_with_reminders_res'
  */
 router.delete('/standups/:id', authMiddleware, standUpController.deleteStandUp);
 router.put('/standups/:id', [
-  body('standup').isObject(),
+  checkSchema(StandUpValidator.put),
   authMiddleware,
 ], standUpController.updateStandUp.bind(standUpController));
 
@@ -123,11 +128,7 @@ router.put('/standups/:id', [
  *               items:
  *                 $ref: '#/components/schemas/StandupResponse'
  */
-router.get(
-  '/standups/responses',
-  authMiddleware,
-  standUpController.standUpResponses,
-);
+router.get('/standups/responses', authMiddleware, standUpController.standUpResponses);
 
 /**
  * @openapi
@@ -172,7 +173,7 @@ router.post(
  *                 $ref: '#/components/examples/standup_subscription_res'
  */
 router.post(
-  '/standups/subcribe',
+  '/standups/subscribe',
   [body('standup_id').isString(), authMiddleware],
   standUpController.subscribeToStandUp,
 );
@@ -195,7 +196,7 @@ router.post(
  *                 $ref: '#/components/examples/standup_unsubscription_res'
  */
 router.post(
-  '/standups/unsubcribe',
+  '/standups/unsubscribe',
   [body('standup_id').isString(), authMiddleware],
   standUpController.unsubscribeToStandUp,
 );
@@ -217,6 +218,7 @@ router.post(
  *                 $ref: '#/components/schemas/User'
  */
 router.get('/users', authMiddleware, userController.users);
+router.put('/users', authMiddleware, userController.updateUser);
 
 // Authentication routes
 

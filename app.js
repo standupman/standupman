@@ -9,9 +9,12 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import cors from 'cors';
 import routes from './routes/web';
 import swaggerJSDocOptions from './swaggerJSDocOptions';
+import { expressReceiver } from './lib/slack/app';
+import remindersJob from './Jobs/Reminder';
 
 dotenv.config({ path: path.resolve('.', '.env') });
 const app = express();
+app.use(expressReceiver.router);
 app.use(cors());
 app.use(express.json());
 app.use(passport.initialize());
@@ -48,3 +51,4 @@ app.listen(process.env.APP_PORT, () => {
     `Application running at http://localhost:${process.env.APP_PORT}`,
   );
 });
+remindersJob.start();

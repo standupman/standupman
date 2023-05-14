@@ -1,0 +1,633 @@
+{
+	"info": {
+		"_postman_id": "16da9e28-505b-458e-a615-9962579f573e",
+		"name": "StandupMan",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Root Path",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{auth_JWT_Token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{host}}:5000/",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						""
+					]
+				},
+				"description": "This request makes call to the root path (home page) of StandupMan.\n\nOfficial Repository:\n\n*   [https://github.com/standupman/standupman](https://github.com/standupman/standupman)"
+			},
+			"response": []
+		},
+		{
+			"name": "Create User",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user\": {\n        \"username\": \"standupman\",\n        \"email\": \"standupman@gmail.com\",\n        \"full_name\": \"standupman\",\n        \"password\": \"standupman\",\n        \"configs\": {\n            \"notification\": {\n                \"destination\": \"slack\"\n            }\n        }\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:5000/users/register",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"users",
+						"register"
+					]
+				},
+				"description": "This request creates a user, and this document is inserted to the collection (table).\n\nOptional Fields:\n\n*   medium_mode\n    *   How user wants to receive notification (e.g. reminders) relating to a standup subscribed.\n    *   Current supported mode is only slack."
+			},
+			"response": []
+		},
+		{
+			"name": "User login",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{auth_JWT_Token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"standupman\",\n    \"password\": \"standupman\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:5000/login",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"login"
+					]
+				},
+				"description": "This authenticates a user with the initial username and password set. A JWT token will be generated upon successful login and the token is used to verify user subsequent access."
+			},
+			"response": []
+		},
+		{
+			"name": "Get User",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{auth_JWT_Token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{host}}:5000/users",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"users"
+					]
+				},
+				"description": "This request retrieves the list of users from the collection."
+			},
+			"response": []
+		},
+		{
+			"name": "Update User",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{auth_JWT_Token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:5000/users",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"users"
+					]
+				},
+				"description": "This request updates a users' configuration based on the current user's authentication."
+			},
+			"response": []
+		},
+		{
+			"name": "Delete User",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{auth_JWT_Token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://{{host}}:5000/users",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"users"
+					]
+				},
+				"description": "This request deletes a user from the collection (table), and any reminders scheduled for the user.\n\n(deleted user is based on the current user's authentication)"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Standup",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{auth_JWT_Token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{host}}:5000/standups/",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"standups",
+						""
+					]
+				},
+				"description": "This request retrieves the list of standups from the collection."
+			},
+			"response": []
+		},
+		{
+			"name": "Create new standup without reminders",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{auth_JWT_Token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Daily Standup Team 1\",\n    \"completionTime\": \"2022-02-19\",\n    \"questions\": {\n        \"question_1\": {\n            \"title\": \"What did you do today\",\n            \"response_type\": \"String\"\n        },\n        \"question_2\": {\n            \"title\": \"How many hours did you work today\",\n            \"response_type\": \"String\"\n        },\n        \"question_3\": {\n            \"title\": \"What will you work on till the next standup\",\n            \"response_type\": \"String\"\n        },\n        \"question_4\": {\n            \"title\": \"Any suggestion for improvements\",\n            \"response_type\": \"String\"\n        }\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:5000/standups/new",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"standups",
+						"new"
+					]
+				},
+				"description": "This request creates a standup, and this document is inserted to the collection (table).\n\n**Optional fields:**\n\n*   **In \"standup\" body, \"reminders\" field;**\n    *   **days**\n        *   The days in the week to send out reminders. This is specified in the \"reminders\" field in \"standup\" body. **By default** **not specified will be Mon - Fri**.\n        *   Allowed values: `[1, 2, 3, 4, 5, 6, 7]`\n        *   For example :\n            *   `\"days\": [1, 3, 4, 7]`\n            *   This sends reminder at every week's Mon, Wed, Thur and Sun.\n    *   **timeZone**\n        *   A timeZone of IANA type is required to set schedule notification time. **This field is only required when** **`schedules`** **field is not empty.**\n        *   List of timeZones: [https://en.wikipedia.org/wiki/List_of_tz_database_time_zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)\n        *   For example;\n            *   `utc`, `Asia/Singapore`, `America/Chicago`\n    *   **schedules**\n        *   Only up to 3 reminders can be scheduled per standup. **By default** **not specified means no reminders will be scheduled** **for the current standup**.\n        *   Passing in the form of `{\"schedules\": [{\"time\": {\"hour\": , \"min\": }}]}` means to set a new reminder.\n        *   Params:\n            *   \"schedules\" -\n                *   \"hour\" - number, `0 - 23`\n                *   \"min\" - number, `0 - 59`\n        *   For example;\n            *   `\"reminders\": {\"schedules\": [{\"time\": {\"hour\": 9, \"min\": 45}}]}`\n                *   This specifies to schedule a reminder at 9:45 a.m at the timeZone specified. It will then be converted to UTC.\n            *   `\"reminders\": {\"schedules\": [{\"time\": {\"hour\": 10, \"min\": 45}}, {\"time\": {\"hour\": 14, \"min\": 45}}]}`\n                *   This specifies to schedule a reminder at 10:45 a.m. and 2 p.m at the timeZone specified. It will then be converted to UTC.\n\n``` json\n{\n    \"standup\": {\n        ...\n        \"reminders\": {\n            \"timeZone\": \"utc\",\n            \"days\": [1, 3, 4, 7],\n            \"schedules\": [\n                {\"time\": {\"hour\": 10, \"min\": 45}},\n                {\"time\": {\"hour\": 14, \"min\": 45}}\n            ]\n        }\n    }\n}\n\n```"
+			},
+			"response": []
+		},
+		{
+			"name": "Create new standup with reminders options",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{auth_JWT_Token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Daily Standup Team 3\",\n    \"completionTime\": \"2022-02-19\",\n    \"questions\": {\n        \"question_1\": {\n            \"title\": \"What did you do today\",\n            \"response_type\": \"String\"\n        },\n        \"question_2\": {\n            \"title\": \"How many hours did you work today\",\n            \"response_type\": \"String\"\n        },\n        \"question_3\": {\n            \"title\": \"What will you work on till the next standup\",\n            \"response_type\": \"String\"\n        },\n        \"question_4\": {\n            \"title\": \"Any suggestion for improvements\",\n            \"response_type\": \"String\"\n        }\n    },\n    \"reminders\": {\n        \"days\": [1, 2, 3, 4, 5, 6],\n        \"timeZone\": \"Asia/Singapore\",\n        \"schedules\": [\n            { \"time\": { \"hour\": 4, \"min\": 45 }},\n            { \"time\": { \"hour\": 5, \"min\": 0 }}\n        ]\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:5000/standups/new",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"standups",
+						"new"
+					]
+				},
+				"description": "This request creates a standup, and this document is inserted to the collection (table).\n\n**Optional fields:**\n\n*   **In \"standup\" body, \"reminders\" field;**\n    *   **days**\n        *   The days in the week to send out reminders. This is specified in the \"reminders\" field in \"standup\" body. **By default** **not specified will be Mon - Fri**.\n        *   Allowed values: `[1, 2, 3, 4, 5, 6, 7]`\n        *   For example :\n            *   `\"days\": [1, 3, 4, 7]`\n            *   This sends reminder at every week's Mon, Wed, Thur and Sun.\n    *   **timeZone**\n        *   A timeZone of IANA type is required to set schedule notification time. **This field is only required when** **`schedules`** **field is not empty.**\n        *   List of timeZones: [https://en.wikipedia.org/wiki/List_of_tz_database_time_zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)\n        *   For example;\n            *   `utc`, `Asia/Singapore`, `America/Chicago`\n    *   **schedules**\n        *   Only up to 3 reminders can be scheduled per standup. **By default** **not specified means no reminders will be scheduled** **for the current standup**.\n        *   Passing in the form of `{\"schedules\": [{\"time\": {\"hour\": , \"min\": }}]}` means to set a new reminder.\n        *   Params:\n            *   \"schedules\" -\n                *   \"hour\" - number, `0 - 23`\n                *   \"min\" - number, `0 - 59`\n        *   For example;\n            *   `\"reminders\": {\"schedules\": [{\"time\": {\"hour\": 9, \"min\": 45}}]}`\n                *   This specifies to schedule a reminder at 9:45 a.m at the timeZone specified. It will then be converted to UTC.\n            *   `\"reminders\": {\"schedules\": [{\"time\": {\"hour\": 10, \"min\": 45}}, {\"time\": {\"hour\": 14, \"min\": 45}}]}`\n                *   This specifies to schedule a reminder at 10:45 a.m. and 2 p.m at the timeZone specified. It will then be converted to UTC.\n\n``` json\n{\n    \"standup\": {\n        ...\n        \"reminders\": {\n            \"timeZone\": \"utc\",\n            \"days\": [1, 3, 4, 7],\n            \"schedules\": [\n                {\"time\": {\"hour\": 10, \"min\": 45}},\n                {\"time\": {\"hour\": 14, \"min\": 45}}\n            ]\n        }\n    }\n}\n\n```"
+			},
+			"response": []
+		},
+		{
+			"name": "Update Standup with no additional options",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{auth_JWT_Token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Daily Standup Team 1\",\n    \"completionTime\": \"2022-02-19\",\n    \"questions\": {\n        \"question_1\": {\n            \"title\": \"What is your favourite bottle?\",\n            \"response_type\": \"String\"\n        },\n        \"question_2\": {\n            \"title\": \"How many hours did you work today\",\n            \"response_type\": \"String\"\n        },\n        \"question_3\": {\n            \"title\": \"What will you work on till the next standup\",\n            \"response_type\": \"String\"\n        }\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:5000/standups/{{standupid}}",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"standups",
+						"{{standupid}}"
+					]
+				},
+				"description": "This request updates a particular standup by replacing the whole document with the request body specified.\n\n**Optional fields:**\n\n*   **In \"standup\" body, \"reminders\" field;**\n    *   **days**\n        *   The days in the week to send out reminders. This is specified in the \"reminders\" field in the request body. **By default** **not specified means it will be updated to the existing value**.\n        *   For example:\n            *   If current standup has these days:\n                *   `\"days\": [1, 3, 4, 7]`\n                *   **To retain existing days:**\n                    *   Do not need set the \"days\" field in the current update if **\"reminders\" field** is not specified. Otherwise if **\"reminders\" field** is specified set it as the example below;\n                        *   `\"days\": [1, 3, 4, 7]`\n                *   **To remove existing days:**\n                    *   To not set any days, set it to `\"days\": []`.\n    *   **timeZone**\n        *   A timeZone of IANA type is required to set schedule notification time. **This field is only required when** **`schedules`** **field is not empty.**\n        *   List of timeZones: [https://en.wikipedia.org/wiki/List_of_tz_database_time_zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)\n        *   For example;\n            *   `utc`, `Asia/Singapore`, `America/Chicago`\n    *   **schedules**\n        *   Only up to 3 reminders can be scheduled per standup. This is specified in the \"reminders\" field in the request body. **By default** **not specified means if there is current reminders scheduled it will retain the current reminders schedules.**\n        *   For example;\n            *   If the current standup has these schedules:\n                *   `\"schedules\"`: \\[`{..., \"time\": { \"hour\": 4, \"min\": 45 }}, {..., \"time\": { \"hour\": 5, \"min\": 45 }}`\\]\n            *   **To retain all current schedules:**\n                *   Do not need set the \"schedules\" field in the current update if **\"reminders\" field** is not specified. Otherwise if **\"reminders\" field** is specified set it as the example below;\n                *   Example:\n                    *   `\"schedules\"`: \\[`{\"time\": { \"hour\": 4, \"min\": 45 }}`, `{\"time\": { \"hour\": 5, \"min\": 45 }}`\\]\n            *   **To retain only specific schedule:**\n                *   For instance to only retain the reminder schedule occurring at 4:45 a.m.\n                *   Example:\n                    *   `\"schedules\"`: \\[`{\"time\": { \"hour\": 4, \"min\": 45 }}`\\]\n                        *   This will only keep the schedule occurring at 4:45 a.m. and not the scheduled time occurring at 5:45 a.m.\n            *   **To add new schedules:**\n                *   At any point in time the \"schedules\" field can only hold up to 3 schedules objects\n                *   Example:\n                    *   `\"schedules\"`: \\[`{\"time\": { \"hour\": 6, \"min\": 45 }}`\\]\n                        *   Specifying as above will create a new reminder scheduled at 6:45 a.m. and remove both schedules occurring at 4:45 a.m. and 5:45 a.m.\n                    *   \"schedules\": \\[`{\"time\": { \"hour\": 4, \"min\": 45 }}`, `{\"time\": { \"hour\": 5, \"min\": 45 }}, {\"time\": { \"hour\": 6, \"min\": 45}}`\\]\n                        *   To retain current existing reminder schedules and add new reminder, all must be specified.\n            *   To remove existing schedules:\n                *   To not set any schedules, set it to `\"schedules\": []`."
+			},
+			"response": []
+		},
+		{
+			"name": "Update Standup with reminders options",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{auth_JWT_Token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Daily Standup Team 3\",\n    \"completionTime\": \"2022-02-19\",\n    \"questions\": {\n        \"question_1\": {\n            \"title\": \"What is your favourite bottle?\",\n            \"response_type\": \"String\"\n        },\n        \"question_2\": {\n            \"title\": \"How many hours did you work today\",\n            \"response_type\": \"String\"\n        },\n        \"question_3\": {\n            \"title\": \"What will you work on till the next standup\",\n            \"response_type\": \"String\"\n        }\n    },\n    \"reminders\": {\n        \"timeZone\": \"America/Chicago\",\n        \"days\": [1, 2, 3, 4, 5],\n        \"schedules\": [\n            {\"time\": {\"hour\": 9, \"min\": 45}},\n            {\"time\": {\"hour\": 10, \"min\": 45}}\n        ]\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:5000/standups/{{standupid}}",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"standups",
+						"{{standupid}}"
+					]
+				},
+				"description": "This request updates a particular standup by replacing the whole document with the request body specified.\n\n**Optional fields:**\n\n*   **In \"standup\" body, \"reminders\" field;**\n    *   **days**\n        *   The days in the week to send out reminders. This is specified in the \"reminders\" field in the request body. **By default** **not specified means it will be updated to the existing value**.\n        *   For example:\n            *   If current standup has these days:\n                *   `\"days\": [1, 3, 4, 7]`\n                *   **To retain existing days:**\n                    *   Do not need set the \"days\" field in the current update if **\"reminders\" field** is not specified. Otherwise if **\"reminders\" field** is specified set it as the example below;\n                        *   `\"days\": [1, 3, 4, 7]`\n                *   **To remove existing days:**\n                    *   To not set any days, set it to `\"days\": []`.\n    *   **timeZone**\n        *   A timeZone of IANA type is required to set schedule notification time. **This field is only required when** **`schedules`** **field is not empty.**\n        *   List of timeZones: [https://en.wikipedia.org/wiki/List_of_tz_database_time_zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)\n        *   For example;\n            *   `utc`, `Asia/Singapore`, `America/Chicago`\n    *   **schedules**\n        *   Only up to 3 reminders can be scheduled per standup. This is specified in the \"reminders\" field in the request body. **By default** **not specified means if there is current reminders scheduled it will retain the current reminders schedules.**\n        *   For example;\n            *   If the current standup has these schedules:\n                *   `\"schedules\"`: \\[`{..., \"time\": { \"hour\": 4, \"min\": 45 }}, {..., \"time\": { \"hour\": 5, \"min\": 45 }}`\\]\n            *   **To retain all current schedules:**\n                *   Do not need set the \"schedules\" field in the current update if **\"reminders\" field** is not specified. Otherwise if **\"reminders\" field** is specified set it as the example below;\n                *   Example:\n                    *   `\"schedules\"`: \\[`{\"time\": { \"hour\": 4, \"min\": 45 }}`, `{\"time\": { \"hour\": 5, \"min\": 45 }}`\\]\n            *   **To retain only specific schedule:**\n                *   For instance to only retain the reminder schedule occurring at 4:45 a.m.\n                *   Example:\n                    *   `\"schedules\"`: \\[`{\"time\": { \"hour\": 4, \"min\": 45 }}`\\]\n                        *   This will only keep the schedule occurring at 4:45 a.m. and not the scheduled time occurring at 5:45 a.m.\n            *   **To add new schedules:**\n                *   At any point in time the \"schedules\" field can only hold up to 3 schedules objects\n                *   Example:\n                    *   `\"schedules\"`: \\[`{\"time\": { \"hour\": 6, \"min\": 45 }}`\\]\n                        *   Specifying as above will create a new reminder scheduled at 6:45 a.m. and remove both schedules occurring at 4:45 a.m. and 5:45 a.m.\n                    *   \"schedules\": \\[`{\"time\": { \"hour\": 4, \"min\": 45 }}`, `{\"time\": { \"hour\": 5, \"min\": 45 }}, {\"time\": { \"hour\": 6, \"min\": 45}}`\\]\n                        *   To retain current existing reminder schedules and add new reminder, all must be specified.\n            *   To remove existing schedules:\n                *   To not set any schedules, set it to `\"schedules\": []`."
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Standup",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{auth_JWT_Token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://{{host}}:5000/standups/{{standupid}}",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"standups",
+						"{{standupid}}"
+					]
+				},
+				"description": "This request deletes a standup from the collection (table).\n\nIf there is any existing users associated with this standup, it will be removed from their list of \"standups\" field."
+			},
+			"response": []
+		},
+		{
+			"name": "User Subscribes to a Standup",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{auth_JWT_Token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"standup_id\": \"{{standupid}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:5000/standups/subscribe",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"standups",
+						"subscribe"
+					]
+				},
+				"description": "This request updates the user \"standups\" particular field to contain the standup_id specified.\n\nIf the standup user subscribed to contains reminders, it will schedule the reminder for the user."
+			},
+			"response": []
+		},
+		{
+			"name": "User Unsubscribes to a Standup",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{auth_JWT_Token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"standup_id\": \"{{standupid}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:5000/standups/unsubscribe",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"standups",
+						"unsubscribe"
+					]
+				},
+				"description": "This request updates the user \"standups\" particular field to remove the standup_id specified.\n\nIf the standup user subscribed to contains reminders, it will remove the reminder that is scheduled for the user."
+			},
+			"response": []
+		},
+		{
+			"name": "Update Standup with answers 1",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{auth_JWT_Token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"standup_update\": {\n        \"standup_id\": \"62440d1b34b322b052e68c45\",\n        \"user_id\": \"624402f8407effaf82a5cc38\",\n        \"answers\": {\n            \"answer_1\": {\n                \"question_id\": \"question_1\",\n                \"response\": \"Troubleshoot faulty API endpoint at '/help/me'\"\n            },\n            \"answer_2\": {\n                \"question_id\": \"question_2\",\n                \"response\": \"10\"\n            },\n            \"answer_3\": {\n                \"question_id\": \"question_3\",\n                \"response\": \"I will be working to fix another broken endpoint\"\n            },\n            \"answer_4\": {\n                \"question_id\": \"question_4\",\n                \"response\": \"There are too many broken endpoints\"\n            }\n        }\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:5000/standups/complete",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"standups",
+						"complete"
+					]
+				},
+				"description": "This request post to record the standup notes for a particular standup."
+			},
+			"response": []
+		},
+		{
+			"name": "Update Standup with answers 2",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{auth_JWT_Token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"standup_update\": {\n        \"standup_id\": \"622439f8538ec680efbd461b\",\n        \"user_id\": \"62245965965b8f945cade0cd\",\n        \"answers\": {\n            \"answer_1\": {\n                \"question_id\": \"question_1\",\n                \"response\": \"I have completed the prototype for the UI design today.\"\n            },\n            \"answer_2\": {\n                \"question_id\": \"question_2\",\n                \"response\": \"2\"\n            },\n            \"answer_3\": {\n                \"question_id\": \"question_3\",\n                \"response\": \"The action items will be fine.\"\n            },\n            \"answer_4\": {\n                \"question_id\": \"question_4\",\n                \"response\": \"The action items will be fine.\"\n            }\n        }\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:5000/standups/complete",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"standups",
+						"complete"
+					]
+				},
+				"description": "This request gets the list of standup related to a particular user."
+			},
+			"response": []
+		},
+		{
+			"name": "Get Standup responses",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{auth_JWT_Token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{host}}:5000/standups/responses",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "5000",
+					"path": [
+						"standups",
+						"responses"
+					]
+				},
+				"description": "This request gets the list of standup responses from the collection."
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "host",
+			"value": "localhost"
+		},
+		{
+			"key": "auth_JWT_Token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdGFuZHVwbWFuX2FwaSIsInN1YiI6IjYyNGRmYmYzYjhmMDY2MmRjN2I0MWVmNyIsImlhdCI6MTY0OTkyNTM5NjA2NCwiZXhwIjoxNjUwMDExNzk2MDY0fQ.zkuGm_cCur5KdRfkcrS6nUbEPScbZHkAbkhWgN9R7Jk"
+		}
+	]
+}
