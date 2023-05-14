@@ -1,4 +1,4 @@
-name: Linting and Swagger checks on PR
+name: Code checks
 
 on:
   pull_request:
