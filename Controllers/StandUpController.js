@@ -1,98 +1,87 @@
 /* eslint-disable class-methods-use-this */
 import { validationResult } from 'express-validator';
-import StandUp from '../Models/StandUp';
-import StandUpUpdate from '../Models/StandUpUpdate';
-import User from '../Models/User';
+import StandUp from '../Models/StandUp.js';
+import StandUpUpdate from '../Models/StandUpUpdate.js';
+import User from '../Models/User.js';
 
 class StandUpController {
   async createNewStandUp(req, res) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({ errors: errors.array() });
     }
 
     try {
       const standUp = await StandUp.create(req.body.standup);
-      res.json({ standUp });
+      return res.status(201).json({ standUp });
     } catch (error) {
-      res.json({
-        standup: {
-          message: 'There was an error creating new StandUp',
-          errorDetails: error,
-        },
+      return res.status(500).json({
+        message: 'There was an error creating new StandUp',
+        error: error.message,
       });
     }
   }
 
+  // TODO: Implement delete functionality
   deleteStandUp(req, res) {
-    res.json(req);
+    res.status(501).json({ message: 'Not Implemented' });
   }
 
   async standUpList(req, res) {
-    const standUps = await StandUp.find();
-    res.json({ standups: standUps });
+    try {
+      const standUps = await StandUp.find();
+      return res.json({ standups: standUps });
+    } catch (error) {
+      return res.status(500).json({ message: 'Error fetching standups', error: error.message });
+    }
   }
 
   async standUpResponses(req, res) {
-    let responses = null;
-    if (req.query.standup_id) {
-      responses = await StandUpUpdate.find({
-        standup_id: req.query.standup_id,
-      });
-      res.json({ standUpResponses: responses });
+    try {
+      const query = req.query.standup_id ? { standup_id: req.query.standup_id } : {};
+      const responses = await StandUpUpdate.find(query);
+      return res.json({ standUpResponses: responses });
+    } catch (error) {
+      return res.status(500).json({ message: 'Error fetching standup responses', error: error.message });
     }
-
-    responses = await StandUpUpdate.find();
-    res.json({ standUpResponses: responses });
   }
 
   async updateStandUp(req, res) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      res.status(400).json({ errors: errors.array() });
-    }
-    let standUp = null;
-    try {
-      standUp = await StandUp.findOne({ _id: req.body.standup.id });
-    } catch (e) {
-      res
-        .status(404)
-        .json({ message: 'StandUp not found!', errors: e.message });
+      return res.status(400).json({ errors: errors.array() });
     }
 
     try {
-      standUp = await StandUp.findOneAndUpdate(
-        { _id: standUp.id },
+      const standUp = await StandUp.findByIdAndUpdate(
+        req.params.id,
         req.body.standup,
         { new: true, runValidators: true },
       );
-      // StandUp.findOneAndUpdate()
-    } catch (e) {
-      res
-        .status(404)
-        .json({ message: 'Error updating standup!', errors: e.message });
-    }
 
-    res.json({ StandUp: standUp });
+      if (!standUp) {
+        return res.status(404).json({ message: 'StandUp not found!' });
+      }
+
+      return res.json({ StandUp: standUp });
+    } catch (e) {
+      return res.status(500).json({ message: 'Error updating standup!', error: e.message });
+    }
   }
 
   async completeStandUp(req, res) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({ errors: errors.array() });
     }
 
-    let standUpUpdate;
-
     try {
-      standUpUpdate = await StandUpUpdate.create(req.body.standup_update);
-      res.json({ standUpUpdate });
+      const standUpUpdate = await StandUpUpdate.create(req.body.standup_update);
+      return res.status(201).json({ standUpUpdate });
     } catch (e) {
-      res.json({
-        StandUp: {
-          message: 'There was an error creating new StandUp',
-          errorDetails: e,
-        },
+      return res.status(500).json({
+        message: 'There was an error completing the StandUp',
+        error: e.message,
       });
     }
   }
@@ -100,53 +89,30 @@ class StandUpController {
   async subscribeToStandUp(req, res) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      res.status(400).json({ errors: errors.array() });
-    }
-
-    let standUp = null;
-    let user = null;
-
-    try {
-      standUp = await StandUp.findOne({ _id: req.body.standup_id });
-    } catch (e) {
-      res
-        .status(404)
-        .json({ message: 'StandUp not found!', errors: e.message });
+      return res.status(400).json({ errors: errors.array() });
     }
 
     try {
-      user = await User.findOne({ username: req.user.username });
-    } catch (e) {
-      res
-        .status(500)
-        .json({ message: 'Error getting user', errors: e.message });
-    }
-
-    if (user.standups.length > 0) {
-      if (user.standups.indexOf(standUp.id) > -1) {
-        res
-          .status(409)
-          .json({ success: false, message: 'User already subscribed', user });
+      const standUp = await StandUp.findById(req.body.standup_id);
+      if (!standUp) {
+        return res.status(404).json({ message: 'StandUp not found!' });
       }
-    }
 
-    try {
-      user.standups.push(standUp.id);
-      user = await User.findOneAndUpdate(
-        { username: user.username },
-        { $set: { standups: user.standups } },
-        { new: true },
-      );
+      const user = await User.findById(req.user.id);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found!' });
+      }
+
+      // Add member to standup if not already a member
+      if (!standUp.members.includes(user.id)) {
+        standUp.members.push(user.id);
+        await standUp.save();
+      }
+
+      return res.json({ standUp });
     } catch (e) {
-      res
-        .status(404)
-        .json({
-          message: 'Error subscribing user to standup!',
-          errors: e.message,
-        });
+      return res.status(500).json({ message: 'Could not subscribe user to standup', error: e.message });
     }
-
-    res.json({ success: true, user });
   }
 
   async unsubscribeToStandUp(req, res) {

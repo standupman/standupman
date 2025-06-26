@@ -1,18 +1,12 @@
-import { validationResult } from 'express-validator';
-import User from '../Models/User';
+import User from '../Models/User.js';
 
 export default {
-  users: (req, res) => {
-    User.find().then((users) => {
-      res.json({ users });
-    });
-  },
-
-  subscribeToStandUp: (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+  users: async (req, res) => {
+    try {
+      const users = await User.find();
+      return res.json({ users });
+    } catch (error) {
+      return res.status(500).json({ message: 'Error fetching users', error: error.message });
     }
-    return res.status(200).json({});
   },
 };
