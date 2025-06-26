@@ -7,8 +7,8 @@ import dotenv from 'dotenv';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJSDoc from 'swagger-jsdoc';
 import cors from 'cors';
-import routes from './routes/web';
-import swaggerJSDocOptions from './swaggerJSDocOptions';
+import routes from './routes/web.js';
+import swaggerJSDocOptions from './swaggerJSDocOptions.js';
 
 dotenv.config({ path: path.resolve('.', '.env') });
 const app = express();
@@ -18,7 +18,7 @@ app.use(passport.initialize());
 
 // Database connection
 const mongoDB = `mongodb://${process.env.DB_HOST}/${process.env.DB_NAME}`;
-mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(mongoDB);
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 

@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
-import publicController from '../Controllers/PublicController';
-import standUpController from '../Controllers/StandUpController';
-import userController from '../Controllers/UserController';
-import authenticationController from '../Controllers/AuthenticationController';
-import auth from '../Middlewares/AuthMiddleware';
+import publicController from '../Controllers/PublicController.js';
+import standUpController from '../Controllers/StandUpController.js';
+import userController from '../Controllers/UserController.js';
+import authenticationController from '../Controllers/AuthenticationController.js';
+import auth from '../Middlewares/AuthMiddleware.js';
 
 const router = Router();
 const authMiddleware = auth.authenticate('jwt', { session: false });
